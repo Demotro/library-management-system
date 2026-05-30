@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfCtenar xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Ctenar>
+    <Jmeno>Jan</Jmeno>
+    <Prijmeni>Novotný</Prijmeni>
+    <Email>jan.novotny@gmail.com</Email>
+    <TelefonniCislo>602123456</TelefonniCislo>
+    <Vypujcene />
+    <Rezervovano>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Pán prstenů: Společenstvo Prstenu</Nazev>
+        <Autor>J.R.R. Tolkien</Autor>
+        <ISBN>12</ISBN>
+        <RokVydani>1954</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>1984</Nazev>
+        <Autor>George Orwell</Autor>
+        <ISBN>17</ISBN>
+        <RokVydani>1949</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+    </Rezervovano>
+  </Ctenar>
+  <Ctenar>
+    <Jmeno>Petra</Jmeno>
+    <Prijmeni>Malá</Prijmeni>
+    <Email>petra.mala@gmail.com</Email>
+    <TelefonniCislo>123123123</TelefonniCislo>
+    <Vypujcene>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Alchymista</Nazev>
+        <Autor>Paulo Coelho</Autor>
+        <ISBN>28</ISBN>
+        <RokVydani>1988</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Pán prstenů: Společenstvo Prstenu</Nazev>
+        <Autor>J.R.R. Tolkien</Autor>
+        <ISBN>12</ISBN>
+        <RokVydani>1954</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+    </Vypujcene>
+    <Rezervovano>
+      <Kniha xsi:type="OpotrebovanaKniha">
+        <Nazev>Malý princ</Nazev>
+        <Autor>Antoine de Saint-Exupéry</Autor>
+        <ISBN>55</ISBN>
+        <RokVydani>1944</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+    </Rezervovano>
+  </Ctenar>
+  <Ctenar>
+    <Jmeno>David</Jmeno>
+    <Prijmeni>Černý</Prijmeni>
+    <Email>david.cerny@gmail.com</Email>
+    <TelefonniCislo>603456789</TelefonniCislo>
+    <Vypujcene>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Harry Potter a Kámen mudrců</Nazev>
+        <Autor>J.K. Rowling</Autor>
+        <ISBN>2</ISBN>
+        <RokVydani>1997</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Pýcha a předsudek</Nazev>
+        <Autor>Jane Austen</Autor>
+        <ISBN>35</ISBN>
+        <RokVydani>1813</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+    </Vypujcene>
+    <Rezervovano>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Pán prstenů: Společenstvo Prstenu</Nazev>
+        <Autor>J.R.R. Tolkien</Autor>
+        <ISBN>12</ISBN>
+        <RokVydani>1954</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+    </Rezervovano>
+  </Ctenar>
+  <Ctenar>
+    <Jmeno>Anna</Jmeno>
+    <Prijmeni>Veselá</Prijmeni>
+    <Email>anna.vesela@gmail.com</Email>
+    <TelefonniCislo>721654987</TelefonniCislo>
+    <Vypujcene />
+    <Rezervovano>
+      <Kniha xsi:type="OpotrebovanaKniha">
+        <Nazev>Jméno růže</Nazev>
+        <Autor>Umberto Eco</Autor>
+        <ISBN>5</ISBN>
+        <RokVydani>1980</RokVydani>
+        <Dostupnost>true</Dostupnost>
+      </Kniha>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Harry Potter a Kámen mudrců</Nazev>
+        <Autor>J.K. Rowling</Autor>
+        <ISBN>2</ISBN>
+        <RokVydani>1997</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+      <Kniha xsi:type="OpotrebovanaKniha">
+        <Nazev>Malý princ</Nazev>
+        <Autor>Antoine de Saint-Exupéry</Autor>
+        <ISBN>55</ISBN>
+        <RokVydani>1944</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+    </Rezervovano>
+  </Ctenar>
+  <Ctenar>
+    <Jmeno>Tomáš</Jmeno>
+    <Prijmeni>Horák</Prijmeni>
+    <Email>tomas.horak@gmail.com</Email>
+    <TelefonniCislo>705123789</TelefonniCislo>
+    <Vypujcene>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Lovec draků</Nazev>
+        <Autor>Khaled Hosseini</Autor>
+        <ISBN>64</ISBN>
+        <RokVydani>2003</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+    </Vypujcene>
+    <Rezervovano>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Pán prstenů: Společenstvo Prstenu</Nazev>
+        <Autor>J.R.R. Tolkien</Autor>
+        <ISBN>12</ISBN>
+        <RokVydani>1954</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Harry Potter a Kámen mudrců</Nazev>
+        <Autor>J.K. Rowling</Autor>
+        <ISBN>2</ISBN>
+        <RokVydani>1997</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+      <Kniha xsi:type="OpotrebovanaKniha">
+        <Nazev>Malý princ</Nazev>
+        <Autor>Antoine de Saint-Exupéry</Autor>
+        <ISBN>55</ISBN>
+        <RokVydani>1944</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+    </Rezervovano>
+  </Ctenar>
+  <Ctenar>
+    <Jmeno>Lucie</Jmeno>
+    <Prijmeni>Králová</Prijmeni>
+    <Email>lucie.kralova@gmail.com</Email>
+    <TelefonniCislo>732789456</TelefonniCislo>
+    <Vypujcene>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>1984</Nazev>
+        <Autor>George Orwell</Autor>
+        <ISBN>17</ISBN>
+        <RokVydani>1949</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Anna Karenina</Nazev>
+        <Autor>Lev Tolstoj</Autor>
+        <ISBN>52</ISBN>
+        <RokVydani>1500</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Velký Gatsby</Nazev>
+        <Autor>F. Scott Fitzgerald</Autor>
+        <ISBN>1</ISBN>
+        <RokVydani>1925</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+    </Vypujcene>
+    <Rezervovano>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Pýcha a předsudek</Nazev>
+        <Autor>Jane Austen</Autor>
+        <ISBN>35</ISBN>
+        <RokVydani>1813</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+      <Kniha xsi:type="OpotrebovanaKniha">
+        <Nazev>Malý princ</Nazev>
+        <Autor>Antoine de Saint-Exupéry</Autor>
+        <ISBN>55</ISBN>
+        <RokVydani>1944</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+    </Rezervovano>
+  </Ctenar>
+  <Ctenar>
+    <Jmeno>Pavel</Jmeno>
+    <Prijmeni>Dvořák</Prijmeni>
+    <Email>pavel.dvorak@gmail.com</Email>
+    <TelefonniCislo>601321654</TelefonniCislo>
+    <Vypujcene>
+      <Kniha xsi:type="OpotrebovanaKniha">
+        <Nazev>Malý princ</Nazev>
+        <Autor>Antoine de Saint-Exupéry</Autor>
+        <ISBN>55</ISBN>
+        <RokVydani>1944</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+      <Kniha xsi:type="OpotrebovanaKniha">
+        <Nazev>Sto roků samoty</Nazev>
+        <Autor>Gabriel García Márquez</Autor>
+        <ISBN>73</ISBN>
+        <RokVydani>1967</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+    </Vypujcene>
+    <Rezervovano>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Pán prstenů: Společenstvo Prstenu</Nazev>
+        <Autor>J.R.R. Tolkien</Autor>
+        <ISBN>12</ISBN>
+        <RokVydani>1954</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+    </Rezervovano>
+  </Ctenar>
+  <Ctenar>
+    <Jmeno>David</Jmeno>
+    <Prijmeni>Krejčí</Prijmeni>
+    <Email>david.krejci@gmail.com</Email>
+    <TelefonniCislo>123456789</TelefonniCislo>
+    <Vypujcene />
+    <Rezervovano>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Harry Potter a Kámen mudrců</Nazev>
+        <Autor>J.K. Rowling</Autor>
+        <ISBN>2</ISBN>
+        <RokVydani>1997</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Pýcha a předsudek</Nazev>
+        <Autor>Jane Austen</Autor>
+        <ISBN>35</ISBN>
+        <RokVydani>1813</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>1984</Nazev>
+        <Autor>George Orwell</Autor>
+        <ISBN>17</ISBN>
+        <RokVydani>1949</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+    </Rezervovano>
+  </Ctenar>
+</ArrayOfCtenar>
