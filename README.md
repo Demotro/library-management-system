@@ -47,7 +47,7 @@ Available books cannot be reserved because they can be borrowed directly.
 2. Build the solution.
 3. Run the application.
 
-## Purpose of the Project
+## Purpose
 
 This project was created to practice desktop application development in C# using Windows Forms.  
-It demonstrates basic CRUD operations, object-oriented programming, working with collections and saving/loading data using XML serialization.
+It demonstrates CRUD operations, object-oriented programming, working with collections and saving/loading data using XML serialization.

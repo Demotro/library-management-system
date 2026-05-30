@@ -113,6 +113,13 @@
         <RokVydani>1944</RokVydani>
         <Dostupnost>false</Dostupnost>
       </Kniha>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>Pán prstenů: Společenstvo Prstenu</Nazev>
+        <Autor>J.R.R. Tolkien</Autor>
+        <ISBN>12</ISBN>
+        <RokVydani>1954</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
     </Rezervovano>
   </Ctenar>
   <Ctenar>
