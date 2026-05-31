@@ -70,6 +70,13 @@ namespace Knihovna.Tests.Fakes
                 v.Stav == "Aktivni");
         }
 
+        public int CountActiveLoansForReader(int ctenarId)
+        {
+            return _vypujcky.Count(v =>
+                v.CtenarId == ctenarId &&
+                v.Stav == "Aktivni");
+        }
+
         public void DeleteByBookId(int knihaId)
         {
             var items = _vypujcky

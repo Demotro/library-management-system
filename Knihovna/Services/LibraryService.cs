@@ -11,6 +11,7 @@ namespace Knihovna
         private const int MaxReaderNameLength = 50;
         private const int MaxReaderSurnameLength = 50;
         private const int MaxReaderEmailLength = 100;
+        private const int MaxActiveLoansPerReader = 5;
 
         private readonly IKnihaRepository _knihaRepository;
         private readonly ICtenarRepository _ctenarRepository;
@@ -360,6 +361,11 @@ namespace Knihovna
             if (ctenar == null)
             {
                 return Result.Fail("Čtenář nebyl nalezen.");
+            }
+
+            if (_vypujckaRepository.CountActiveLoansForReader(ctenarId) >= MaxActiveLoansPerReader)
+            {
+                return Result.Fail("Čtenář může mít maximálně 5 aktivních výpůjček.");
             }
 
             if (_vypujckaRepository.HasActiveLoanForBook(knihaId))

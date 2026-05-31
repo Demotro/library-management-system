@@ -15,6 +15,7 @@ namespace Knihovna
 
         bool HasActiveLoanForBook(int knihaId);
         bool HasActiveLoanForReader(int ctenarId);
+        int CountActiveLoansForReader(int ctenarId);
 
         void DeleteByBookId(int knihaId);
         void DeleteByReaderId(int ctenarId);

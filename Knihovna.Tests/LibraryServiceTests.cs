@@ -852,6 +852,86 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void BorrowBook_WhenReaderHasFiveActiveLoans_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            for (int i = 0; i < 5; i++)
+            {
+                var kniha = new DobraKniha("Book " + i, "Author", "123456789" + i, 2020);
+                _knihaRepository.Add(kniha);
+
+                _service.BorrowBook(kniha.Id, ctenar.Id);
+            }
+
+            var sixthBook = new DobraKniha("Book 6", "Author", "1234567895", 2020);
+            _knihaRepository.Add(sixthBook);
+
+            Result result = _service.BorrowBook(sixthBook.Id, ctenar.Id);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Čtenář může mít maximálně 5 aktivních výpůjček.", result.Message);
+        }
+
+        [TestMethod]
+        public void BorrowBook_WhenReaderHasFourActiveLoans_ShouldSucceed()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            for (int i = 0; i < 4; i++)
+            {
+                var kniha = new DobraKniha("Book " + i, "Author", "123456789" + i, 2020);
+                _knihaRepository.Add(kniha);
+
+                _service.BorrowBook(kniha.Id, ctenar.Id);
+            }
+
+            var fifthBook = new DobraKniha("Book 5", "Author", "1234567894", 2020);
+            _knihaRepository.Add(fifthBook);
+
+            Result result = _service.BorrowBook(fifthBook.Id, ctenar.Id);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Kniha byla úspěšně vypůjčena.", result.Message);
+            Assert.AreEqual(5, _vypujckaRepository.CountActiveLoansForReader(ctenar.Id));
+        }
+
+        [TestMethod]
+        public void BorrowBook_WhenReaderHasFiveLoansButOneReturned_ShouldSucceed()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            Kniha? firstBook = null;
+
+            for (int i = 0; i < 5; i++)
+            {
+                var kniha = new DobraKniha("Book " + i, "Author", "123456789" + i, 2020);
+                _knihaRepository.Add(kniha);
+
+                if (i == 0)
+                {
+                    firstBook = kniha;
+                }
+
+                _service.BorrowBook(kniha.Id, ctenar.Id);
+            }
+
+            _service.ReturnBook(firstBook!.Id);
+
+            var sixthBook = new DobraKniha("Book 6", "Author", "1234567895", 2020);
+            _knihaRepository.Add(sixthBook);
+
+            Result result = _service.BorrowBook(sixthBook.Id, ctenar.Id);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Kniha byla úspěšně vypůjčena.", result.Message);
+            Assert.AreEqual(5, _vypujckaRepository.CountActiveLoansForReader(ctenar.Id));
+        }
+
+        [TestMethod]
         public void UpdateBook_WhenBookHasActiveLoan_ShouldFail()
         {
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
