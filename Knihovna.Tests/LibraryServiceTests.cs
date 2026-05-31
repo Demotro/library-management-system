@@ -57,6 +57,31 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void AddBook_WhenIsbnContainsHyphens_ShouldSaveNormalizedIsbn()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "123-456-7890", 2020);
+
+            Result result = _service.AddBook(kniha);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("1234567890", kniha.ISBN);
+        }
+
+        [TestMethod]
+        public void AddBook_WhenSameIsbnHasDifferentFormat_ShouldFail()
+        {
+            var kniha1 = new DobraKniha("Book One", "Author One", "1234567890", 2020);
+            var kniha2 = new DobraKniha("Book Two", "Author Two", "123-456-7890", 2021);
+
+            _service.AddBook(kniha1);
+
+            Result result = _service.AddBook(kniha2);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Kniha s tímto ISBN už existuje.", result.Message);
+        }
+
+        [TestMethod]
         public void AddBook_WhenIsbnHasInvalidFormat_ShouldFail()
         {
             var kniha = new DobraKniha("Test Book", "Test Author", "12345", 2020);
