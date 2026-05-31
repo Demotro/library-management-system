@@ -130,11 +130,6 @@ namespace Knihovna
             btnZrusit.Enabled = dgvRezervovane.Rows.Count > 0;
         }
 
-        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            Databaze.Serializuj(); //u SQLite verze uz nic neuklada, data se ukladaji prubezne
-        }
-
         private void dgvCtenari_SelectionChanged(object sender, EventArgs e)
         {
             RefreshSelectedReaderBooks();

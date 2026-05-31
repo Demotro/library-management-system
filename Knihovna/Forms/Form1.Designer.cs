@@ -464,7 +464,6 @@
             Controls.Add(dgvCtenari);
             Name = "Form1";
             Text = "Správa knihovny";
-            FormClosed += Form1_FormClosed;
             ((System.ComponentModel.ISupportInitialize)dgvCtenari).EndInit();
             ((System.ComponentModel.ISupportInitialize)dgvKnihy).EndInit();
             ((System.ComponentModel.ISupportInitialize)dgvVypujcene).EndInit();

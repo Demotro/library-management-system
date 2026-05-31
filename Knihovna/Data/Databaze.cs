@@ -272,16 +272,5 @@ namespace Knihovna
 
             return true;
         }
-
-        //puvodni XML metoda uz nic neuklada, data se ukladaji primo do SQLite databaze
-        public static void Serializuj()
-        {
-        }
-
-        //puvodni XML metoda je nahrazena nacitanim ze SQLite databaze
-        public static void Deserializuj()
-        {
-            NacistData();
-        }
     }
 }
