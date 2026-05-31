@@ -148,7 +148,7 @@ namespace Knihovna
             command.Parameters.AddWithValue("@DatumVraceni", DBNull.Value);
             command.Parameters.AddWithValue("@Stav", vypujcka.Stav);
 
-            long newId = (long)command.ExecuteScalar();
+            long newId = Convert.ToInt64(command.ExecuteScalar());
             vypujcka.Id = (int)newId;
         }
 
@@ -184,7 +184,7 @@ namespace Knihovna
 
             command.Parameters.AddWithValue("@KnihaId", knihaId);
 
-            long count = (long)command.ExecuteScalar();
+            long count = Convert.ToInt64(command.ExecuteScalar());
 
             return count > 0;
         }
@@ -203,7 +203,7 @@ namespace Knihovna
 
             command.Parameters.AddWithValue("@CtenarId", ctenarId);
 
-            long count = (long)command.ExecuteScalar();
+            long count = Convert.ToInt64(command.ExecuteScalar());
 
             return count > 0;
         }

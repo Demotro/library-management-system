@@ -20,9 +20,9 @@ namespace Knihovna
         public ActionType1 Action { get; set; } = ActionType1.New;
 
         //vola instanci knihy pro vytvoreni nebo editaci
-        public Kniha Kniha { get; set; }
+        public Kniha Kniha { get; set; } = null!;
 
-        public KnihaDialog() //konstruktor dialogu
+        public KnihaDialog()
         {
             InitializeComponent();
         }
@@ -33,7 +33,6 @@ namespace Knihovna
             switch (Action)
             {
                 case ActionType1.New:
-                    //kdyz chceme vytvorit novou instanci knihy, tak textova pole jsou prazdna
                     txtNazev.Text = "";
                     txtAutor.Text = "";
                     txtISBN.Text = "";
@@ -44,13 +43,11 @@ namespace Knihovna
                 case ActionType1.Edit:
                     if (Kniha == null) return;
 
-                    //kdyz chceme editovat instanci knihy, tak se zobrazi vyplnena textova pole
                     txtNazev.Text = Kniha.Nazev;
                     txtAutor.Text = Kniha.Autor;
                     txtISBN.Text = Kniha.ISBN;
                     numRok.Value = Kniha.RokVydani;
 
-                    //nastavuje stav knihy podle typu knihy
                     if (Kniha is NovaKniha) cbStavKnihy.Text = "Nový";
                     else if (Kniha is DobraKniha) cbStavKnihy.Text = "Dobrý";
                     else if (Kniha is OpotrebovanaKniha) cbStavKnihy.Text = "Opotřebovaný";
@@ -71,7 +68,6 @@ namespace Knihovna
 
             string isbn = txtISBN.Text.Trim();
 
-            //pro kontrolu odebereme pomlcky a mezery
             string isbnPouzeCisla = isbn.Replace("-", "").Replace(" ", "");
 
             if (!isbnPouzeCisla.All(char.IsDigit) ||
@@ -90,14 +86,18 @@ namespace Knihovna
                 return;
             }
 
+            if (Action == ActionType1.Edit && Kniha == null)
+            {
+                MessageBox.Show("Kniha pro editaci nebyla nalezena.");
+                return;
+            }
+
             bool isbnExistuje = false;
 
-            //kontrola, aby pri vytvoreni knihy neslo zadat uz existujici ISBN
             if (Action == ActionType1.New)
             {
                 isbnExistuje = Databaze.Knihy.Any(k => k.ISBN == isbn);
             }
-            //kontrola, aby pri editaci knihy neslo zadat ISBN jine existujici knihy
             else if (Action == ActionType1.Edit)
             {
                 isbnExistuje = Databaze.Knihy.Any(k => k.ISBN == isbn && k.Id != Kniha.Id);
@@ -109,23 +109,28 @@ namespace Knihovna
                 return;
             }
 
-            Kniha novaKniha = stav switch
-            {
-                "Nový" => new NovaKniha(txtNazev.Text.Trim(), txtAutor.Text.Trim(), isbn, (int)numRok.Value),
-                "Dobrý" => new DobraKniha(txtNazev.Text.Trim(), txtAutor.Text.Trim(), isbn, (int)numRok.Value),
-                "Opotřebovaný" => new OpotrebovanaKniha(txtNazev.Text.Trim(), txtAutor.Text.Trim(), isbn, (int)numRok.Value),
-                _ => null
-            };
+            Kniha novaKniha;
 
-            if (novaKniha == null)
+            if (stav == "Nový")
+            {
+                novaKniha = new NovaKniha(txtNazev.Text.Trim(), txtAutor.Text.Trim(), isbn, (int)numRok.Value);
+            }
+            else if (stav == "Dobrý")
+            {
+                novaKniha = new DobraKniha(txtNazev.Text.Trim(), txtAutor.Text.Trim(), isbn, (int)numRok.Value);
+            }
+            else if (stav == "Opotřebovaný")
+            {
+                novaKniha = new OpotrebovanaKniha(txtNazev.Text.Trim(), txtAutor.Text.Trim(), isbn, (int)numRok.Value);
+            }
+            else
             {
                 MessageBox.Show("Nepodařilo se vytvořit knihu.");
                 return;
             }
 
-            if (Action == ActionType1.Edit && Kniha != null)
+            if (Action == ActionType1.Edit)
             {
-                //zachovani hodnot, ktere se v dialogu nemeni
                 novaKniha.Id = Kniha.Id;
                 novaKniha.Dostupnost = Kniha.Dostupnost;
             }

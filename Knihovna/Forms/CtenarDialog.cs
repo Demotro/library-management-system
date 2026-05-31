@@ -21,9 +21,9 @@ namespace Knihovna
         public ActionType Action { get; set; } = ActionType.New;
 
         //vola instanci ctenare pro vytvoreni nebo editaci
-        public Ctenar Ctenar { get; set; }
+        public Ctenar Ctenar { get; set; } = null!;
 
-        public CtenarDialog() //konstruktor dialogu
+        public CtenarDialog()
         {
             InitializeComponent();
         }
@@ -34,7 +34,6 @@ namespace Knihovna
             switch (Action)
             {
                 case ActionType.New:
-                    //kdyz chceme vytvorit novou instanci ctenare, tak textova pole jsou prazdna
                     txtJmeno.Text = "";
                     txtPrijmeni.Text = "";
                     txtEmail.Text = "";
@@ -44,7 +43,6 @@ namespace Knihovna
                 case ActionType.Edit:
                     if (Ctenar == null) return;
 
-                    //kdyz chceme editovat instanci ctenare, tak se zobrazi vyplnena textova pole
                     txtJmeno.Text = Ctenar.Jmeno;
                     txtPrijmeni.Text = Ctenar.Prijmeni;
                     txtEmail.Text = Ctenar.Email;
@@ -65,6 +63,12 @@ namespace Knihovna
                 return;
             }
 
+            if (Action == ActionType.Edit && Ctenar == null)
+            {
+                MessageBox.Show("Čtenář pro editaci nebyl nalezen.");
+                return;
+            }
+
             string telCislo = txtTelCislo.Text.Trim();
 
             if (!telCislo.All(char.IsDigit) || telCislo.Length != 9)
@@ -80,12 +84,9 @@ namespace Knihovna
                 txtEmail.Text.Trim()
             );
 
-            if (Action == ActionType.Edit && Ctenar != null)
+            if (Action == ActionType.Edit)
             {
-                //zachovani ID puvodniho ctenare
                 novyCtenar.Id = Ctenar.Id;
-
-                //zachovani aktualnich seznamu, ktere se v dialogu neupravuji
                 novyCtenar.Vypujcene = Ctenar.Vypujcene;
                 novyCtenar.Rezervovano = Ctenar.Rezervovano;
             }

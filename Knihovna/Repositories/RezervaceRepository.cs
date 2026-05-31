@@ -151,7 +151,7 @@ namespace Knihovna
             command.Parameters.AddWithValue("@DatumRezervace", rezervace.DatumRezervace.ToString("yyyy-MM-dd HH:mm:ss"));
             command.Parameters.AddWithValue("@Stav", rezervace.Stav);
 
-            long newId = (long)command.ExecuteScalar();
+            long newId = Convert.ToInt64(command.ExecuteScalar());
             rezervace.Id = (int)newId;
         }
 
@@ -203,7 +203,7 @@ namespace Knihovna
             command.Parameters.AddWithValue("@KnihaId", knihaId);
             command.Parameters.AddWithValue("@CtenarId", ctenarId);
 
-            long count = (long)command.ExecuteScalar();
+            long count = Convert.ToInt64(command.ExecuteScalar());
 
             return count > 0;
         }
@@ -222,7 +222,7 @@ namespace Knihovna
 
             command.Parameters.AddWithValue("@KnihaId", knihaId);
 
-            long count = (long)command.ExecuteScalar();
+            long count = Convert.ToInt64(command.ExecuteScalar());
 
             return count > 0;
         }
@@ -241,7 +241,7 @@ namespace Knihovna
 
             command.Parameters.AddWithValue("@CtenarId", ctenarId);
 
-            long count = (long)command.ExecuteScalar();
+            long count = Convert.ToInt64(command.ExecuteScalar());
 
             return count > 0;
         }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Data.Sqlite;
 
 namespace Knihovna
@@ -69,7 +70,7 @@ namespace Knihovna
             command.Parameters.AddWithValue("@TelefonniCislo", ctenar.TelefonniCislo);
             command.Parameters.AddWithValue("@Email", ctenar.Email);
 
-            long newId = (long)command.ExecuteScalar();
+            long newId = Convert.ToInt64(command.ExecuteScalar());
             ctenar.Id = (int)newId;
         }
 
@@ -124,7 +125,7 @@ namespace Knihovna
 
             command.Parameters.AddWithValue("@Email", email);
 
-            long count = (long)command.ExecuteScalar();
+            long count = Convert.ToInt64(command.ExecuteScalar());
 
             return count > 0;
         }

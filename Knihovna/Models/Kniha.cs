@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace Knihovna
@@ -9,9 +13,9 @@ namespace Knihovna
     {
         //privatni atributy pro ulozeni dat knihy
         private int _id;
-        private string _nazev;
-        private string _autor;
-        private string _isbn;
+        private string _nazev = string.Empty;
+        private string _autor = string.Empty;
+        private string _isbn = string.Empty;
         private int _rokVydani;
         private bool _dostupnost = true;
 
