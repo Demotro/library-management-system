@@ -9,7 +9,7 @@ namespace Knihovna
     public class NovaKniha : Kniha
     {
         //Konstruktor pro vytvořeni nove instance knihy
-        public NovaKniha(string nazev, string autor, int isbn, int rokVydani)
+        public NovaKniha(string nazev, string autor, string isbn, int rokVydani)
             : base(nazev, autor, isbn, rokVydani)
         {
         }

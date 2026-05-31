@@ -10,12 +10,13 @@ using System.Windows.Forms;
 using System.Xml;
 
 namespace Knihovna
-{   //akce pro vytvoreni nebo editaci instance ctenare
+{
+    //akce pro vytvoreni nebo editaci instance ctenare
     public enum ActionType { New, Edit }
 
     //formular pro vytvoreni nebo editaci ctenare
     public partial class CtenarDialog : Form
-    {   
+    {
         //urcuje jestli se vytvari ctenar nebo edituje ctenar
         public ActionType Action { get; set; } = ActionType.New;
 
@@ -39,12 +40,13 @@ namespace Knihovna
                     txtEmail.Text = "";
                     txtTelCislo.Text = "";
                     break;
+
                 case ActionType.Edit:
-                    //Kdyz chceme editovat instanci ctenare, tak se zobrazi vyplnene text. pole
+                    //kdyz chceme editovat instanci ctenare, tak se zobrazi vyplnene text. pole
                     txtJmeno.Text = Ctenar.Jmeno;
                     txtPrijmeni.Text = Ctenar.Prijmeni;
                     txtEmail.Text = Ctenar.Email;
-                    txtTelCislo.Text = Ctenar.TelefonniCislo.ToString();
+                    txtTelCislo.Text = Ctenar.TelefonniCislo;
                     break;
             }
         }
@@ -52,28 +54,39 @@ namespace Knihovna
         //metoda formulare, po kliknuti na OK
         private void OK_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtJmeno.Text) || string.IsNullOrWhiteSpace(txtPrijmeni.Text)
-                || string.IsNullOrWhiteSpace(txtEmail.Text) || string.IsNullOrWhiteSpace(txtTelCislo.Text))
-            { MessageBox.Show("Jméno/Příjmení/E-mail/Telefonní číslo nesmí být prázdný!"); return; }
+            if (string.IsNullOrWhiteSpace(txtJmeno.Text) ||
+                string.IsNullOrWhiteSpace(txtPrijmeni.Text) ||
+                string.IsNullOrWhiteSpace(txtEmail.Text) ||
+                string.IsNullOrWhiteSpace(txtTelCislo.Text))
+            {
+                MessageBox.Show("Jméno, příjmení, e-mail a telefonní číslo nesmí být prázdné!");
+                return;
+            }
 
-            string telText = txtTelCislo.Text;
-            if (!int.TryParse(txtTelCislo.Text, out int telCislo) || (telText.Length != 9))
-            { MessageBox.Show("Telefonní číslo musí mít 9 číslic!"); return; }
+            string telCislo = txtTelCislo.Text.Trim();
+
+            if (!telCislo.All(char.IsDigit) || telCislo.Length != 9)
+            {
+                MessageBox.Show("Telefonní číslo musí mít 9 číslic.");
+                return;
+            }
 
             switch (Action)
             {
                 case ActionType.New:
                     //vytvori novou instanci s vyplnenymi text. poli
-                    Ctenar = new Ctenar(txtJmeno.Text, txtPrijmeni.Text, txtEmail.Text, telCislo);
+                    Ctenar = new Ctenar(txtJmeno.Text, txtPrijmeni.Text, telCislo, txtEmail.Text);
                     break;
+
                 case ActionType.Edit:
-                    //aktualizuje istanci ctenare, kterou editujeme
+                    //aktualizuje instanci ctenare, kterou editujeme
                     Ctenar.Jmeno = txtJmeno.Text;
                     Ctenar.Prijmeni = txtPrijmeni.Text;
                     Ctenar.Email = txtEmail.Text;
                     Ctenar.TelefonniCislo = telCislo;
                     break;
             }
+
             this.DialogResult = DialogResult.OK;
             this.Close();
         }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace Knihovna
@@ -12,21 +8,29 @@ namespace Knihovna
     public abstract class Kniha
     {
         //privatni atributy pro ulozeni dat knihy
+        private int _id;
         private string _nazev;
         private string _autor;
-        private int _isbn;
+        private string _isbn;
         private int _rokVydani;
         private bool _dostupnost = true;
 
         //vlastnosti, ktere ctou a zapisuji privatni atributy
+        public int Id
+        { get => _id; set => _id = value; }
+
         public string Nazev
         { get => _nazev; set => _nazev = value; }
+
         public string Autor
         { get => _autor; set => _autor = value; }
-        public int ISBN
+
+        public string ISBN
         { get => _isbn; set => _isbn = value; }
+
         public int RokVydani
         { get => _rokVydani; set => _rokVydani = value; }
+
         public bool Dostupnost
         { get => _dostupnost; set => _dostupnost = value; }
 
@@ -37,7 +41,7 @@ namespace Knihovna
         protected Kniha() { }
 
         //konstruktor pro vytvoreni instance knihy
-        protected Kniha(string nazev, string autor, int isbn, int rokVydani)
+        protected Kniha(string nazev, string autor, string isbn, int rokVydani)
         {
             Nazev = nazev;
             Autor = autor;

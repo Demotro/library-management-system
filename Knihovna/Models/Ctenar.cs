@@ -1,86 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Knihovna
 {
-    [Serializable()]
-    public class Ctenar : INotifyPropertyChanged
+    [Serializable]
+    public class Ctenar
     {
         //privatni atributy pro ulozeni dat ctenare
-        private string _jmeno;
-        private string _prijmeni;
-        private string _email;
-        private int _telefonniCislo;
+        private int _id;
+        private string _jmeno = string.Empty;
+        private string _prijmeni = string.Empty;
+        private string _telefonniCislo = string.Empty;
+        private string _email = string.Empty;
 
         //vlastnosti, ktere ctou a zapisuji privatni atributy
+        public int Id
+        {
+            get => _id;
+            set => _id = value;
+        }
+
         public string Jmeno
         {
             get => _jmeno;
-            set
-            {
-                if (_jmeno != value) // kdyz se zmeni hodnota, tak se aktualizuje atribut
-                { _jmeno = value; NotifyPropertyChanged(); }
-            }
+            set => _jmeno = value;
         }
+
         public string Prijmeni
         {
             get => _prijmeni;
-            set
-            { 
-                if (_prijmeni != value)
-                { _prijmeni = value; NotifyPropertyChanged(); }
-            }
+            set => _prijmeni = value;
         }
+
+        public string TelefonniCislo
+        {
+            get => _telefonniCislo;
+            set => _telefonniCislo = value;
+        }
+
         public string Email
         {
             get => _email;
-            set
-            {
-                if (_email != value)
-                { _email = value; NotifyPropertyChanged(); }
-            }
-        }
-        public int TelefonniCislo
-        {
-            get => _telefonniCislo;
-            set
-            {
-                if (_telefonniCislo != value)
-                { _telefonniCislo = value; NotifyPropertyChanged(); }
-            }
+            set => _email = value;
         }
 
-        //kolekce knih, ktere ma ctenar vypujcene
-        public BindingList<Kniha> Vypujcene { get; private set; } = new BindingList<Kniha>();
+        //seznam knih, ktere ma ctenar vypujcene
+        public BindingList<Kniha> Vypujcene { get; set; } = new BindingList<Kniha>();
 
-        //kolekce knih, ktere ma ctenar rezervovane
-        public BindingList<Kniha> Rezervovano { get; private set; } = new BindingList<Kniha>();
+        //seznam knih, ktere ma ctenar rezervovane
+        public BindingList<Kniha> Rezervovano { get; set; } = new BindingList<Kniha>();
 
-        //konstruktor pro prazdnou instanci ctenare, potrebny pro serializaci
+        //konstruktor prazdne instance ctenare, potrebny pro serializaci
         public Ctenar() { }
 
         //konstruktor pro vytvoreni instance ctenare
-        public Ctenar(string jmeno, string prijmeni, string email, int telefonniCislo)
+        public Ctenar(string jmeno, string prijmeni, string telefonniCislo, string email)
         {
             Jmeno = jmeno;
             Prijmeni = prijmeni;
-            Email = email;
             TelefonniCislo = telefonniCislo;
+            Email = email;
         }
 
-        //kdyz se zmeni vlastnost ctenare, tak tahle metoda aktualizuje user interface toho ctenare
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {   //udalost upozorni user interface na zmenu vlastnosti
-            PropertyChanged?.Invoke(propertyName, new PropertyChangedEventArgs(propertyName));
+        public override string ToString()
+        {
+            return $"{Jmeno} {Prijmeni}";
         }
-        //udalost informuje user interface o zmene vlastnosti
-        public event PropertyChangedEventHandler? PropertyChanged;
     }
 }

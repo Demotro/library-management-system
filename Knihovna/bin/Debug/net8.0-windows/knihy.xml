@@ -40,7 +40,7 @@
     <Autor>Erich Maria Remarque</Autor>
     <ISBN>6</ISBN>
     <RokVydani>1929</RokVydani>
-    <Dostupnost>true</Dostupnost>
+    <Dostupnost>false</Dostupnost>
   </Kniha>
   <Kniha xsi:type="NovaKniha">
     <Nazev>Alchymista</Nazev>

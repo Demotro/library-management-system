@@ -90,7 +90,15 @@
     <Prijmeni>Veselá</Prijmeni>
     <Email>anna.vesela@gmail.com</Email>
     <TelefonniCislo>721654987</TelefonniCislo>
-    <Vypujcene />
+    <Vypujcene>
+      <Kniha xsi:type="DobraKniha">
+        <Nazev>Na západní frontě klid</Nazev>
+        <Autor>Erich Maria Remarque</Autor>
+        <ISBN>6</ISBN>
+        <RokVydani>1929</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+    </Vypujcene>
     <Rezervovano>
       <Kniha xsi:type="OpotrebovanaKniha">
         <Nazev>Jméno růže</Nazev>
