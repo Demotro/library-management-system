@@ -196,6 +196,55 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void BorrowBook_WhenBookReservedForAnotherReader_ShouldFail()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+            var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "petr@test.cz");
+            var ctenar3 = new Ctenar("Karel", "Dvorak", "111222333", "karel@test.cz");
+
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar1);
+            _ctenarRepository.Add(ctenar2);
+            _ctenarRepository.Add(ctenar3);
+
+            _service.BorrowBook(kniha.Id, ctenar1.Id);
+            _service.ReserveBook(kniha.Id, ctenar2.Id);
+            _service.ReturnBook(kniha.Id);
+
+            Result result = _service.BorrowBook(kniha.Id, ctenar3.Id);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Kniha je rezervovaná pro jiného čtenáře.", result.Message);
+        }
+
+        [TestMethod]
+        public void BorrowBook_WhenBookReservedForSameReader_ShouldCompleteReservation()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+            var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "petr@test.cz");
+
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar1);
+            _ctenarRepository.Add(ctenar2);
+
+            _service.BorrowBook(kniha.Id, ctenar1.Id);
+            _service.ReserveBook(kniha.Id, ctenar2.Id);
+
+            Rezervace rezervace = _rezervaceRepository.GetAll().First();
+
+            _service.ReturnBook(kniha.Id);
+
+            Result result = _service.BorrowBook(kniha.Id, ctenar2.Id);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Kniha byla úspěšně vypůjčena.", result.Message);
+            Assert.AreEqual("Vyrizena", rezervace.Stav);
+            Assert.IsTrue(_vypujckaRepository.HasActiveLoanForReader(ctenar2.Id));
+        }
+
+        [TestMethod]
         public void ReturnBook_WhenBookIsBorrowed_ShouldMarkLoanAsReturned()
         {
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
