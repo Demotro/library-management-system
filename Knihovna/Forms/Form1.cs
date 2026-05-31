@@ -14,6 +14,10 @@ namespace Knihovna
             dgvKnihy.AutoGenerateColumns = false;
             dgvCtenari.AutoGenerateColumns = false;
 
+            dgvKnihy.SelectionChanged += dgvKnihy_SelectionChanged;
+            dgvVypujcene.SelectionChanged += dgvVypujcene_SelectionChanged;
+            dgvRezervovane.SelectionChanged += dgvRezervovane_SelectionChanged;
+
             if (cbFiltrDostupnosti.Items.Count > 0 && cbFiltrDostupnosti.SelectedIndex == -1)
             {
                 cbFiltrDostupnosti.SelectedIndex = 0;
@@ -180,16 +184,52 @@ namespace Knihovna
             dgvVypujcene.DataSource = vybranyCtenar.Vypujcene;
         }
 
-        //metoda pro nastaveni tlacitek podle dostupnosti v seznamech
+        //metoda pro nastaveni tlacitek podle aktualniho vyberu
         private void SetButtons()
         {
-            btnVratit.Enabled = dgvVypujcene.Rows.Count > 0;
-            btnZrusit.Enabled = dgvRezervovane.Rows.Count > 0;
+            bool jeVybranyCtenar = dgvCtenari.CurrentRow != null &&
+                                   dgvCtenari.CurrentRow.DataBoundItem is Ctenar;
+
+            bool jeVybranaKniha = dgvKnihy.CurrentRow != null &&
+                                  dgvKnihy.CurrentRow.DataBoundItem is Kniha;
+
+            bool jeVybranaVypujcenaKniha = dgvVypujcene.CurrentRow != null &&
+                                           dgvVypujcene.CurrentRow.DataBoundItem is Kniha;
+
+            bool jeVybranaRezervovanaKniha = dgvRezervovane.CurrentRow != null &&
+                                             dgvRezervovane.CurrentRow.DataBoundItem is Kniha;
+
+            btnEditaceCtenare.Enabled = jeVybranyCtenar;
+            btnSmazatCtenare.Enabled = jeVybranyCtenar;
+
+            btnEditaceKnihy.Enabled = jeVybranaKniha;
+            btnSmazatKnihu.Enabled = jeVybranaKniha;
+
+            btnVypujcit.Enabled = jeVybranyCtenar && jeVybranaKniha;
+            btnRezervovat.Enabled = jeVybranyCtenar && jeVybranaKniha;
+
+            btnVratit.Enabled = jeVybranyCtenar && jeVybranaVypujcenaKniha;
+            btnZrusit.Enabled = jeVybranyCtenar && jeVybranaRezervovanaKniha;
         }
 
         private void dgvCtenari_SelectionChanged(object sender, EventArgs e)
         {
             RefreshSelectedReaderBooks();
+            SetButtons();
+        }
+
+        private void dgvKnihy_SelectionChanged(object? sender, EventArgs e)
+        {
+            SetButtons();
+        }
+
+        private void dgvVypujcene_SelectionChanged(object? sender, EventArgs e)
+        {
+            SetButtons();
+        }
+
+        private void dgvRezervovane_SelectionChanged(object? sender, EventArgs e)
+        {
             SetButtons();
         }
 
@@ -400,6 +440,7 @@ namespace Knihovna
         {
             txtHledatKnihu.Text = "";
             ApplyBookSearchFilter();
+            SetButtons();
         }
 
         private void txtHledatCtenare_TextChanged(object sender, EventArgs e)
