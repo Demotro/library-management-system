@@ -193,6 +193,18 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void AddReader_WhenPhoneNumberContainsSpacesAndHyphens_ShouldSaveNormalizedPhoneNumber()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123-456 789", "jan@test.cz");
+
+            Result result = _service.AddReader(ctenar);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Čtenář byl úspěšně přidán.", result.Message);
+            Assert.AreEqual("123456789", ctenar.TelefonniCislo);
+        }
+
+        [TestMethod]
         public void UpdateReader_WhenReaderDoesNotExist_ShouldFail()
         {
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
@@ -248,6 +260,22 @@ namespace Knihovna.Tests
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Telefonní číslo musí mít 9 číslic.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateReader_WhenPhoneNumberContainsSpacesAndHyphens_ShouldSaveNormalizedPhoneNumber()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            var upravenyCtenar = new Ctenar("Jan", "Novotny", "123-456 789", "jan@test.cz");
+            upravenyCtenar.Id = ctenar.Id;
+
+            Result result = _service.UpdateReader(upravenyCtenar);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Čtenář byl úspěšně upraven.", result.Message);
+            Assert.AreEqual("123456789", upravenyCtenar.TelefonniCislo);
         }
 
         [TestMethod]
