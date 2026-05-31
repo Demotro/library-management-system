@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Mail;
 
 namespace Knihovna
 {
@@ -449,7 +450,22 @@ namespace Knihovna
 
         private bool IsValidEmail(string email)
         {
-            return email.Contains("@") && email.Contains(".");
+            try
+            {
+                string normalizedEmail = email.Trim();
+
+                var mailAddress = new MailAddress(normalizedEmail);
+
+                return mailAddress.Address == normalizedEmail &&
+                       normalizedEmail.Count(c => c == '@') == 1 &&
+                       mailAddress.Host.Contains('.') &&
+                       !mailAddress.Host.StartsWith(".") &&
+                       !mailAddress.Host.EndsWith(".");
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private string NormalizeEmail(string email)
