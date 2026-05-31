@@ -1042,6 +1042,24 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void UpdateReader_WhenSameEmailHasDifferentCase_ShouldFail()
+        {
+            var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "petr@test.cz");
+
+            _ctenarRepository.Add(ctenar1);
+            _ctenarRepository.Add(ctenar2);
+
+            var upravenyCtenar = new Ctenar("Petr", "Svoboda", "987654321", "JAN@Test.cz");
+            upravenyCtenar.Id = ctenar2.Id;
+
+            Result result = _service.UpdateReader(upravenyCtenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Jiný čtenář s tímto e-mailem už existuje.", result.Message);
+        }
+
+        [TestMethod]
         public void UpdateReader_WhenEmailBelongsToSameReader_ShouldSucceed()
         {
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
