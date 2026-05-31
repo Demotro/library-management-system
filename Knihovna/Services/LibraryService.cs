@@ -46,6 +46,11 @@ namespace Knihovna
             kniha.Nazev = kniha.Nazev.Trim();
             kniha.Autor = kniha.Autor.Trim();
 
+            if (!IsValidPublicationYear(kniha.RokVydani))
+            {
+                return Result.Fail("Rok vydání musí být mezi 1450 a aktuálním rokem.");
+            }
+
             if (string.IsNullOrWhiteSpace(kniha.ISBN))
             {
                 return Result.Fail("ISBN je povinné.");
@@ -89,6 +94,11 @@ namespace Knihovna
 
             kniha.Nazev = kniha.Nazev.Trim();
             kniha.Autor = kniha.Autor.Trim();
+
+            if (!IsValidPublicationYear(kniha.RokVydani))
+            {
+                return Result.Fail("Rok vydání musí být mezi 1450 a aktuálním rokem.");
+            }
 
             if (string.IsNullOrWhiteSpace(kniha.ISBN))
             {
@@ -430,6 +440,11 @@ namespace Knihovna
         private string NormalizeIsbn(string isbn)
         {
             return isbn.Replace("-", "").Replace(" ", "");
+        }
+
+        private bool IsValidPublicationYear(int year)
+        {
+            return year >= 1450 && year <= DateTime.Now.Year;
         }
 
         private bool IsValidEmail(string email)
