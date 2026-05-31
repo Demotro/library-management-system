@@ -249,10 +249,39 @@ namespace Knihovna
 
         public static bool SmazatelnaKniha(Kniha kniha)
         {
+            if (Knihy.Count == 1)
+            {
+                MessageBox.Show("Nemůžeš smazat poslední knihu. V databázi musí zůstat alespoň jedna kniha!");
+                return false;
+            }
+
             if (_vypujckaRepository.HasActiveLoanForBook(kniha.Id) ||
                 _rezervaceRepository.HasActiveReservationForBook(kniha.Id))
             {
                 MessageBox.Show("Knihu nelze smazat, protože je vypůjčená nebo rezervovaná.");
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool SmazatelnyCtenar(Ctenar ctenar)
+        {
+            if (Ctenari.Count == 1)
+            {
+                MessageBox.Show("Nemůžeš smazat posledního čtenáře. V databázi musí zůstat alespoň jeden čtenář!");
+                return false;
+            }
+
+            if (_vypujckaRepository.HasActiveLoanForReader(ctenar.Id))
+            {
+                MessageBox.Show("Čtenáře nelze smazat, protože má aktivní výpůjčku.");
+                return false;
+            }
+
+            if (_rezervaceRepository.HasActiveReservationForReader(ctenar.Id))
+            {
+                MessageBox.Show("Čtenáře nelze smazat, protože má aktivní rezervaci.");
                 return false;
             }
 

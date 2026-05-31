@@ -390,6 +390,12 @@ namespace Knihovna
 
             var vybranaKniha = (Kniha)dgvKnihy.CurrentRow.DataBoundItem;
 
+            if (!Databaze.SmazatelnaKniha(vybranaKniha))
+            {
+                SetButtons();
+                return;
+            }
+
             DialogResult potvrzeni = MessageBox.Show(
                 $"Opravdu chcete smazat knihu \"{vybranaKniha.Nazev}\"?",
                 "Potvrzení smazání",
@@ -399,17 +405,15 @@ namespace Knihovna
 
             if (potvrzeni != DialogResult.Yes)
             {
+                SetButtons();
                 return;
             }
 
-            if (Databaze.SmazatelnaKniha(vybranaKniha))
-            {
-                bool success = Databaze.SmazatKnihu(vybranaKniha);
+            bool success = Databaze.SmazatKnihu(vybranaKniha);
 
-                if (success)
-                {
-                    RefreshDataSources(selectedCtenarId, null);
-                }
+            if (success)
+            {
+                RefreshDataSources(selectedCtenarId, null);
             }
 
             SetButtons();
@@ -423,6 +427,12 @@ namespace Knihovna
 
             var vybranyCtenar = (Ctenar)dgvCtenari.CurrentRow.DataBoundItem;
 
+            if (!Databaze.SmazatelnyCtenar(vybranyCtenar))
+            {
+                SetButtons();
+                return;
+            }
+
             DialogResult potvrzeni = MessageBox.Show(
                 $"Opravdu chcete smazat ètenáøe {vybranyCtenar.Jmeno} {vybranyCtenar.Prijmeni}?",
                 "Potvrzení smazání",
@@ -432,6 +442,7 @@ namespace Knihovna
 
             if (potvrzeni != DialogResult.Yes)
             {
+                SetButtons();
                 return;
             }
 
