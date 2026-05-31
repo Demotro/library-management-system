@@ -239,6 +239,25 @@ namespace Knihovna
             return count > 0;
         }
 
+        public int CountActiveReservationsForReader(int ctenarId)
+        {
+            using var connection = Database.CreateConnection();
+            using var command = connection.CreateCommand();
+
+            command.CommandText = @"
+                SELECT COUNT(*)
+                FROM Rezervace
+                WHERE CtenarId = @CtenarId
+                  AND Stav = 'Aktivni';
+            ";
+
+            command.Parameters.AddWithValue("@CtenarId", ctenarId);
+
+            long count = Convert.ToInt64(command.ExecuteScalar());
+
+            return (int)count;
+        }
+
         public void DeleteByBookId(int knihaId)
         {
             using var connection = Database.CreateConnection();

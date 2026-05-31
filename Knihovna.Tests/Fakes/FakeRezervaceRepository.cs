@@ -91,6 +91,13 @@ namespace Knihovna.Tests.Fakes
                 r.Stav == "Aktivni");
         }
 
+        public int CountActiveReservationsForReader(int ctenarId)
+        {
+            return _rezervace.Count(r =>
+                r.CtenarId == ctenarId &&
+                r.Stav == "Aktivni");
+        }
+
         public void DeleteByBookId(int knihaId)
         {
             var items = _rezervace

@@ -12,6 +12,7 @@ namespace Knihovna
         private const int MaxReaderSurnameLength = 50;
         private const int MaxReaderEmailLength = 100;
         private const int MaxActiveLoansPerReader = 5;
+        private const int MaxActiveReservationsPerReader = 5;
 
         private readonly IKnihaRepository _knihaRepository;
         private readonly ICtenarRepository _ctenarRepository;
@@ -458,6 +459,11 @@ namespace Knihovna
             if (_rezervaceRepository.ExistsActiveReservation(knihaId, ctenarId))
             {
                 return Result.Fail("Čtenář už má tuto knihu rezervovanou.");
+            }
+
+            if (_rezervaceRepository.CountActiveReservationsForReader(ctenarId) >= MaxActiveReservationsPerReader)
+            {
+                return Result.Fail("Čtenář může mít maximálně 5 aktivních rezervací.");
             }
 
             var rezervace = new Rezervace

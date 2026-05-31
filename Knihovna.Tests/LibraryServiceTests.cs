@@ -1284,6 +1284,114 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void ReserveBook_WhenReaderHasFiveActiveReservations_ShouldFail()
+        {
+            var reserver = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(reserver);
+
+            for (int i = 0; i < 5; i++)
+            {
+                var borrower = new Ctenar("Borrower" + i, "User", "12345678" + i, "borrower" + i + "@test.cz");
+                var kniha = new DobraKniha("Book " + i, "Author", "123456789" + i, 2020);
+
+                _ctenarRepository.Add(borrower);
+                _knihaRepository.Add(kniha);
+
+                _service.BorrowBook(kniha.Id, borrower.Id);
+                _service.ReserveBook(kniha.Id, reserver.Id);
+            }
+
+            var sixthBorrower = new Ctenar("Borrower6", "User", "123456785", "borrower6@test.cz");
+            var sixthBook = new DobraKniha("Book 6", "Author", "1234567895", 2020);
+
+            _ctenarRepository.Add(sixthBorrower);
+            _knihaRepository.Add(sixthBook);
+
+            _service.BorrowBook(sixthBook.Id, sixthBorrower.Id);
+
+            Result result = _service.ReserveBook(sixthBook.Id, reserver.Id);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Čtenář může mít maximálně 5 aktivních rezervací.", result.Message);
+            Assert.AreEqual(5, _rezervaceRepository.CountActiveReservationsForReader(reserver.Id));
+        }
+
+        [TestMethod]
+        public void ReserveBook_WhenReaderHasFourActiveReservations_ShouldSucceed()
+        {
+            var reserver = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(reserver);
+
+            for (int i = 0; i < 4; i++)
+            {
+                var borrower = new Ctenar("Borrower" + i, "User", "12345678" + i, "borrower" + i + "@test.cz");
+                var kniha = new DobraKniha("Book " + i, "Author", "123456789" + i, 2020);
+
+                _ctenarRepository.Add(borrower);
+                _knihaRepository.Add(kniha);
+
+                _service.BorrowBook(kniha.Id, borrower.Id);
+                _service.ReserveBook(kniha.Id, reserver.Id);
+            }
+
+            var fifthBorrower = new Ctenar("Borrower5", "User", "123456784", "borrower5@test.cz");
+            var fifthBook = new DobraKniha("Book 5", "Author", "1234567894", 2020);
+
+            _ctenarRepository.Add(fifthBorrower);
+            _knihaRepository.Add(fifthBook);
+
+            _service.BorrowBook(fifthBook.Id, fifthBorrower.Id);
+
+            Result result = _service.ReserveBook(fifthBook.Id, reserver.Id);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Kniha byla úspěšně rezervována.", result.Message);
+            Assert.AreEqual(5, _rezervaceRepository.CountActiveReservationsForReader(reserver.Id));
+        }
+
+        [TestMethod]
+        public void ReserveBook_WhenReaderHasFiveReservationsButOneCancelled_ShouldSucceed()
+        {
+            var reserver = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(reserver);
+
+            Rezervace? firstReservation = null;
+
+            for (int i = 0; i < 5; i++)
+            {
+                var borrower = new Ctenar("Borrower" + i, "User", "12345678" + i, "borrower" + i + "@test.cz");
+                var kniha = new DobraKniha("Book " + i, "Author", "123456789" + i, 2020);
+
+                _ctenarRepository.Add(borrower);
+                _knihaRepository.Add(kniha);
+
+                _service.BorrowBook(kniha.Id, borrower.Id);
+                _service.ReserveBook(kniha.Id, reserver.Id);
+
+                if (i == 0)
+                {
+                    firstReservation = _rezervaceRepository.GetAll().First();
+                }
+            }
+
+            _service.CancelReservation(firstReservation!.Id);
+
+            var sixthBorrower = new Ctenar("Borrower6", "User", "123456785", "borrower6@test.cz");
+            var sixthBook = new DobraKniha("Book 6", "Author", "1234567895", 2020);
+
+            _ctenarRepository.Add(sixthBorrower);
+            _knihaRepository.Add(sixthBook);
+
+            _service.BorrowBook(sixthBook.Id, sixthBorrower.Id);
+
+            Result result = _service.ReserveBook(sixthBook.Id, reserver.Id);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Kniha byla úspěšně rezervována.", result.Message);
+            Assert.AreEqual(5, _rezervaceRepository.CountActiveReservationsForReader(reserver.Id));
+        }
+
+        [TestMethod]
         public void ReserveBook_WhenReaderBorrowedSameBook_ShouldFail()
         {
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);

@@ -17,6 +17,7 @@ namespace Knihovna
         bool ExistsActiveReservation(int knihaId, int ctenarId);
         bool HasActiveReservationForBook(int knihaId);
         bool HasActiveReservationForReader(int ctenarId);
+        int CountActiveReservationsForReader(int ctenarId);
 
         void DeleteByBookId(int knihaId);
         void DeleteByReaderId(int ctenarId);
