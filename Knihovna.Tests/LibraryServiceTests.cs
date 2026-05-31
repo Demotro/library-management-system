@@ -439,6 +439,19 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void AddReader_WhenEmailHasMaximumLength_ShouldSucceed()
+        {
+            string email = new string('a', 50) + "@" + new string('b', 46) + ".cz";
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", email);
+
+            Result result = _service.AddReader(ctenar);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Čtenář byl úspěšně přidán.", result.Message);
+            Assert.AreEqual(100, ctenar.Email.Length);
+        }
+
+        [TestMethod]
         public void AddReader_WhenEmailAlreadyExists_ShouldFail()
         {
             var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
@@ -653,6 +666,23 @@ namespace Knihovna.Tests
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("E-mail čtenáře může mít maximálně 100 znaků.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateReader_WhenEmailHasMaximumLength_ShouldSucceed()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            string email = new string('a', 50) + "@" + new string('b', 46) + ".cz";
+            var upravenyCtenar = new Ctenar("Jan", "Novak", "123456789", email);
+            upravenyCtenar.Id = ctenar.Id;
+
+            Result result = _service.UpdateReader(upravenyCtenar);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Čtenář byl úspěšně upraven.", result.Message);
+            Assert.AreEqual(100, upravenyCtenar.Email.Length);
         }
 
         [TestMethod]
