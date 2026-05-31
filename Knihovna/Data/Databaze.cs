@@ -207,13 +207,6 @@ namespace Knihovna
                 return false;
             }
 
-            var smazani = MessageBox.Show("Opravdu chceš smazat knihu?", "Smazání knihy", MessageBoxButtons.YesNo);
-
-            if (smazani != DialogResult.Yes)
-            {
-                return false;
-            }
-
             Result result = _libraryService.DeleteBook(kniha.Id);
             MessageBox.Show(result.Message);
 
@@ -240,13 +233,6 @@ namespace Knihovna
             if (Ctenari.Count == 1)
             {
                 MessageBox.Show("Nemůžeš smazat posledního čtenáře. V databázi musí zůstat alespoň jeden čtenář!");
-                return false;
-            }
-
-            var smazani = MessageBox.Show("Opravdu chceš smazat čtenáře?", "Smazání čtenáře", MessageBoxButtons.YesNo);
-
-            if (smazani != DialogResult.Yes)
-            {
                 return false;
             }
 

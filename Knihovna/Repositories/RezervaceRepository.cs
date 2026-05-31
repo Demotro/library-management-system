@@ -8,23 +8,21 @@ namespace Knihovna
     {
         public List<Rezervace> GetAll()
         {
-            List<Rezervace> rezervace = new List<Rezervace>();
+            var rezervace = new List<Rezervace>();
 
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 SELECT Id, KnihaId, CtenarId, DatumRezervace, Stav
-                FROM Rezervace
-                ORDER BY DatumRezervace DESC;
+                FROM Rezervace;
             ";
 
             using var reader = command.ExecuteReader();
 
             while (reader.Read())
             {
-                Rezervace item = CreateReservationFromReader(reader);
-                rezervace.Add(item);
+                rezervace.Add(MapRezervace(reader));
             }
 
             return rezervace;
@@ -33,8 +31,8 @@ namespace Knihovna
         public Rezervace? GetById(int id)
         {
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 SELECT Id, KnihaId, CtenarId, DatumRezervace, Stav
                 FROM Rezervace
@@ -47,7 +45,7 @@ namespace Knihovna
 
             if (reader.Read())
             {
-                return CreateReservationFromReader(reader);
+                return MapRezervace(reader);
             }
 
             return null;
@@ -55,16 +53,15 @@ namespace Knihovna
 
         public List<Rezervace> GetActiveReservationsByBookId(int knihaId)
         {
-            List<Rezervace> rezervace = new List<Rezervace>();
+            var rezervace = new List<Rezervace>();
 
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 SELECT Id, KnihaId, CtenarId, DatumRezervace, Stav
                 FROM Rezervace
-                WHERE KnihaId = @KnihaId
-                  AND Stav = 'Aktivni'
+                WHERE KnihaId = @KnihaId AND Stav = 'Aktivni'
                 ORDER BY DatumRezervace ASC;
             ";
 
@@ -74,8 +71,7 @@ namespace Knihovna
 
             while (reader.Read())
             {
-                Rezervace item = CreateReservationFromReader(reader);
-                rezervace.Add(item);
+                rezervace.Add(MapRezervace(reader));
             }
 
             return rezervace;
@@ -83,16 +79,15 @@ namespace Knihovna
 
         public List<Rezervace> GetReservationsByReaderId(int ctenarId)
         {
-            List<Rezervace> rezervace = new List<Rezervace>();
+            var rezervace = new List<Rezervace>();
 
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 SELECT Id, KnihaId, CtenarId, DatumRezervace, Stav
                 FROM Rezervace
-                WHERE CtenarId = @CtenarId
-                ORDER BY DatumRezervace DESC;
+                WHERE CtenarId = @CtenarId;
             ";
 
             command.Parameters.AddWithValue("@CtenarId", ctenarId);
@@ -101,8 +96,7 @@ namespace Knihovna
 
             while (reader.Read())
             {
-                Rezervace item = CreateReservationFromReader(reader);
-                rezervace.Add(item);
+                rezervace.Add(MapRezervace(reader));
             }
 
             return rezervace;
@@ -111,13 +105,12 @@ namespace Knihovna
         public Rezervace? GetFirstActiveReservationByBookId(int knihaId)
         {
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 SELECT Id, KnihaId, CtenarId, DatumRezervace, Stav
                 FROM Rezervace
-                WHERE KnihaId = @KnihaId
-                  AND Stav = 'Aktivni'
+                WHERE KnihaId = @KnihaId AND Stav = 'Aktivni'
                 ORDER BY DatumRezervace ASC
                 LIMIT 1;
             ";
@@ -128,7 +121,7 @@ namespace Knihovna
 
             if (reader.Read())
             {
-                return CreateReservationFromReader(reader);
+                return MapRezervace(reader);
             }
 
             return null;
@@ -137,8 +130,8 @@ namespace Knihovna
         public void Add(Rezervace rezervace)
         {
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 INSERT INTO Rezervace (KnihaId, CtenarId, DatumRezervace, Stav)
                 VALUES (@KnihaId, @CtenarId, @DatumRezervace, @Stav);
@@ -148,18 +141,18 @@ namespace Knihovna
 
             command.Parameters.AddWithValue("@KnihaId", rezervace.KnihaId);
             command.Parameters.AddWithValue("@CtenarId", rezervace.CtenarId);
-            command.Parameters.AddWithValue("@DatumRezervace", rezervace.DatumRezervace.ToString("yyyy-MM-dd HH:mm:ss"));
+            command.Parameters.AddWithValue("@DatumRezervace", rezervace.DatumRezervace.ToString("O"));
             command.Parameters.AddWithValue("@Stav", rezervace.Stav);
 
-            long newId = Convert.ToInt64(command.ExecuteScalar());
-            rezervace.Id = (int)newId;
+            long id = Convert.ToInt64(command.ExecuteScalar());
+            rezervace.Id = (int)id;
         }
 
         public void Cancel(int id)
         {
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 UPDATE Rezervace
                 SET Stav = 'Zrusena'
@@ -174,8 +167,8 @@ namespace Knihovna
         public void MarkAsCompleted(int id)
         {
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 UPDATE Rezervace
                 SET Stav = 'Vyrizena'
@@ -190,8 +183,8 @@ namespace Knihovna
         public bool ExistsActiveReservation(int knihaId, int ctenarId)
         {
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 SELECT COUNT(*)
                 FROM Rezervace
@@ -211,8 +204,8 @@ namespace Knihovna
         public bool HasActiveReservationForBook(int knihaId)
         {
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 SELECT COUNT(*)
                 FROM Rezervace
@@ -230,8 +223,8 @@ namespace Knihovna
         public bool HasActiveReservationForReader(int ctenarId)
         {
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 SELECT COUNT(*)
                 FROM Rezervace
@@ -246,17 +239,46 @@ namespace Knihovna
             return count > 0;
         }
 
-        private Rezervace CreateReservationFromReader(SqliteDataReader reader)
+        public void DeleteByBookId(int knihaId)
         {
-            Rezervace rezervace = new Rezervace();
+            using var connection = Database.CreateConnection();
+            using var command = connection.CreateCommand();
 
-            rezervace.Id = reader.GetInt32(0);
-            rezervace.KnihaId = reader.GetInt32(1);
-            rezervace.CtenarId = reader.GetInt32(2);
-            rezervace.DatumRezervace = DateTime.Parse(reader.GetString(3));
-            rezervace.Stav = reader.GetString(4);
+            command.CommandText = @"
+                DELETE FROM Rezervace
+                WHERE KnihaId = @KnihaId;
+            ";
 
-            return rezervace;
+            command.Parameters.AddWithValue("@KnihaId", knihaId);
+
+            command.ExecuteNonQuery();
+        }
+
+        public void DeleteByReaderId(int ctenarId)
+        {
+            using var connection = Database.CreateConnection();
+            using var command = connection.CreateCommand();
+
+            command.CommandText = @"
+                DELETE FROM Rezervace
+                WHERE CtenarId = @CtenarId;
+            ";
+
+            command.Parameters.AddWithValue("@CtenarId", ctenarId);
+
+            command.ExecuteNonQuery();
+        }
+
+        private Rezervace MapRezervace(SqliteDataReader reader)
+        {
+            return new Rezervace
+            {
+                Id = reader.GetInt32(0),
+                KnihaId = reader.GetInt32(1),
+                CtenarId = reader.GetInt32(2),
+                DatumRezervace = DateTime.Parse(reader.GetString(3)),
+                Stav = reader.GetString(4)
+            };
         }
     }
 }

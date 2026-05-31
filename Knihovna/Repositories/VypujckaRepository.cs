@@ -8,23 +8,21 @@ namespace Knihovna
     {
         public List<Vypujcka> GetAll()
         {
-            List<Vypujcka> vypujcky = new List<Vypujcka>();
+            var vypujcky = new List<Vypujcka>();
 
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 SELECT Id, KnihaId, CtenarId, DatumVypujceni, DatumVraceni, Stav
-                FROM Vypujcky
-                ORDER BY DatumVypujceni DESC;
+                FROM Vypujcky;
             ";
 
             using var reader = command.ExecuteReader();
 
             while (reader.Read())
             {
-                Vypujcka vypujcka = CreateLoanFromReader(reader);
-                vypujcky.Add(vypujcka);
+                vypujcky.Add(MapVypujcka(reader));
             }
 
             return vypujcky;
@@ -32,24 +30,22 @@ namespace Knihovna
 
         public List<Vypujcka> GetActiveLoans()
         {
-            List<Vypujcka> vypujcky = new List<Vypujcka>();
+            var vypujcky = new List<Vypujcka>();
 
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 SELECT Id, KnihaId, CtenarId, DatumVypujceni, DatumVraceni, Stav
                 FROM Vypujcky
-                WHERE Stav = 'Aktivni'
-                ORDER BY DatumVypujceni DESC;
+                WHERE Stav = 'Aktivni';
             ";
 
             using var reader = command.ExecuteReader();
 
             while (reader.Read())
             {
-                Vypujcka vypujcka = CreateLoanFromReader(reader);
-                vypujcky.Add(vypujcka);
+                vypujcky.Add(MapVypujcka(reader));
             }
 
             return vypujcky;
@@ -58,8 +54,8 @@ namespace Knihovna
         public Vypujcka? GetById(int id)
         {
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 SELECT Id, KnihaId, CtenarId, DatumVypujceni, DatumVraceni, Stav
                 FROM Vypujcky
@@ -72,7 +68,7 @@ namespace Knihovna
 
             if (reader.Read())
             {
-                return CreateLoanFromReader(reader);
+                return MapVypujcka(reader);
             }
 
             return null;
@@ -81,13 +77,12 @@ namespace Knihovna
         public Vypujcka? GetActiveLoanByBookId(int knihaId)
         {
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 SELECT Id, KnihaId, CtenarId, DatumVypujceni, DatumVraceni, Stav
                 FROM Vypujcky
-                WHERE KnihaId = @KnihaId
-                  AND Stav = 'Aktivni'
+                WHERE KnihaId = @KnihaId AND Stav = 'Aktivni'
                 LIMIT 1;
             ";
 
@@ -97,7 +92,7 @@ namespace Knihovna
 
             if (reader.Read())
             {
-                return CreateLoanFromReader(reader);
+                return MapVypujcka(reader);
             }
 
             return null;
@@ -105,16 +100,15 @@ namespace Knihovna
 
         public List<Vypujcka> GetLoansByReaderId(int ctenarId)
         {
-            List<Vypujcka> vypujcky = new List<Vypujcka>();
+            var vypujcky = new List<Vypujcka>();
 
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 SELECT Id, KnihaId, CtenarId, DatumVypujceni, DatumVraceni, Stav
                 FROM Vypujcky
-                WHERE CtenarId = @CtenarId
-                ORDER BY DatumVypujceni DESC;
+                WHERE CtenarId = @CtenarId;
             ";
 
             command.Parameters.AddWithValue("@CtenarId", ctenarId);
@@ -123,8 +117,7 @@ namespace Knihovna
 
             while (reader.Read())
             {
-                Vypujcka vypujcka = CreateLoanFromReader(reader);
-                vypujcky.Add(vypujcka);
+                vypujcky.Add(MapVypujcka(reader));
             }
 
             return vypujcky;
@@ -133,8 +126,8 @@ namespace Knihovna
         public void Add(Vypujcka vypujcka)
         {
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 INSERT INTO Vypujcky (KnihaId, CtenarId, DatumVypujceni, DatumVraceni, Stav)
                 VALUES (@KnihaId, @CtenarId, @DatumVypujceni, @DatumVraceni, @Stav);
@@ -144,19 +137,19 @@ namespace Knihovna
 
             command.Parameters.AddWithValue("@KnihaId", vypujcka.KnihaId);
             command.Parameters.AddWithValue("@CtenarId", vypujcka.CtenarId);
-            command.Parameters.AddWithValue("@DatumVypujceni", vypujcka.DatumVypujceni.ToString("yyyy-MM-dd HH:mm:ss"));
+            command.Parameters.AddWithValue("@DatumVypujceni", vypujcka.DatumVypujceni.ToString("O"));
             command.Parameters.AddWithValue("@DatumVraceni", DBNull.Value);
             command.Parameters.AddWithValue("@Stav", vypujcka.Stav);
 
-            long newId = Convert.ToInt64(command.ExecuteScalar());
-            vypujcka.Id = (int)newId;
+            long id = Convert.ToInt64(command.ExecuteScalar());
+            vypujcka.Id = (int)id;
         }
 
         public void MarkAsReturned(int id)
         {
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 UPDATE Vypujcky
                 SET DatumVraceni = @DatumVraceni,
@@ -165,7 +158,7 @@ namespace Knihovna
             ";
 
             command.Parameters.AddWithValue("@Id", id);
-            command.Parameters.AddWithValue("@DatumVraceni", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            command.Parameters.AddWithValue("@DatumVraceni", DateTime.Now.ToString("O"));
 
             command.ExecuteNonQuery();
         }
@@ -173,13 +166,12 @@ namespace Knihovna
         public bool HasActiveLoanForBook(int knihaId)
         {
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 SELECT COUNT(*)
                 FROM Vypujcky
-                WHERE KnihaId = @KnihaId
-                  AND Stav = 'Aktivni';
+                WHERE KnihaId = @KnihaId AND Stav = 'Aktivni';
             ";
 
             command.Parameters.AddWithValue("@KnihaId", knihaId);
@@ -192,13 +184,12 @@ namespace Knihovna
         public bool HasActiveLoanForReader(int ctenarId)
         {
             using var connection = Database.CreateConnection();
-
             using var command = connection.CreateCommand();
+
             command.CommandText = @"
                 SELECT COUNT(*)
                 FROM Vypujcky
-                WHERE CtenarId = @CtenarId
-                  AND Stav = 'Aktivni';
+                WHERE CtenarId = @CtenarId AND Stav = 'Aktivni';
             ";
 
             command.Parameters.AddWithValue("@CtenarId", ctenarId);
@@ -208,27 +199,47 @@ namespace Knihovna
             return count > 0;
         }
 
-        private Vypujcka CreateLoanFromReader(SqliteDataReader reader)
+        public void DeleteByBookId(int knihaId)
         {
-            Vypujcka vypujcka = new Vypujcka();
+            using var connection = Database.CreateConnection();
+            using var command = connection.CreateCommand();
 
-            vypujcka.Id = reader.GetInt32(0);
-            vypujcka.KnihaId = reader.GetInt32(1);
-            vypujcka.CtenarId = reader.GetInt32(2);
-            vypujcka.DatumVypujceni = DateTime.Parse(reader.GetString(3));
+            command.CommandText = @"
+                DELETE FROM Vypujcky
+                WHERE KnihaId = @KnihaId;
+            ";
 
-            if (reader.IsDBNull(4))
+            command.Parameters.AddWithValue("@KnihaId", knihaId);
+
+            command.ExecuteNonQuery();
+        }
+
+        public void DeleteByReaderId(int ctenarId)
+        {
+            using var connection = Database.CreateConnection();
+            using var command = connection.CreateCommand();
+
+            command.CommandText = @"
+                DELETE FROM Vypujcky
+                WHERE CtenarId = @CtenarId;
+            ";
+
+            command.Parameters.AddWithValue("@CtenarId", ctenarId);
+
+            command.ExecuteNonQuery();
+        }
+
+        private Vypujcka MapVypujcka(SqliteDataReader reader)
+        {
+            return new Vypujcka
             {
-                vypujcka.DatumVraceni = null;
-            }
-            else
-            {
-                vypujcka.DatumVraceni = DateTime.Parse(reader.GetString(4));
-            }
-
-            vypujcka.Stav = reader.GetString(5);
-
-            return vypujcka;
+                Id = reader.GetInt32(0),
+                KnihaId = reader.GetInt32(1),
+                CtenarId = reader.GetInt32(2),
+                DatumVypujceni = DateTime.Parse(reader.GetString(3)),
+                DatumVraceni = reader.IsDBNull(4) ? null : DateTime.Parse(reader.GetString(4)),
+                Stav = reader.GetString(5)
+            };
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Knihovna;
 
 namespace Knihovna.Tests.Fakes
 {
@@ -11,7 +10,7 @@ namespace Knihovna.Tests.Fakes
 
         public List<Rezervace> GetAll()
         {
-            return _rezervace;
+            return _rezervace.ToList();
         }
 
         public Rezervace? GetById(int id)
@@ -44,9 +43,7 @@ namespace Knihovna.Tests.Fakes
 
         public void Add(Rezervace rezervace)
         {
-            rezervace.Id = _nextId;
-            _nextId++;
-
+            rezervace.Id = _nextId++;
             _rezervace.Add(rezervace);
         }
 
@@ -54,24 +51,20 @@ namespace Knihovna.Tests.Fakes
         {
             Rezervace? rezervace = GetById(id);
 
-            if (rezervace == null)
+            if (rezervace != null)
             {
-                return;
+                rezervace.Stav = "Zrusena";
             }
-
-            rezervace.Stav = "Zrusena";
         }
 
         public void MarkAsCompleted(int id)
         {
             Rezervace? rezervace = GetById(id);
 
-            if (rezervace == null)
+            if (rezervace != null)
             {
-                return;
+                rezervace.Stav = "Vyrizena";
             }
-
-            rezervace.Stav = "Vyrizena";
         }
 
         public bool ExistsActiveReservation(int knihaId, int ctenarId)
@@ -94,6 +87,30 @@ namespace Knihovna.Tests.Fakes
             return _rezervace.Any(r =>
                 r.CtenarId == ctenarId &&
                 r.Stav == "Aktivni");
+        }
+
+        public void DeleteByBookId(int knihaId)
+        {
+            var items = _rezervace
+                .Where(r => r.KnihaId == knihaId)
+                .ToList();
+
+            foreach (var item in items)
+            {
+                _rezervace.Remove(item);
+            }
+        }
+
+        public void DeleteByReaderId(int ctenarId)
+        {
+            var items = _rezervace
+                .Where(r => r.CtenarId == ctenarId)
+                .ToList();
+
+            foreach (var item in items)
+            {
+                _rezervace.Remove(item);
+            }
         }
     }
 }

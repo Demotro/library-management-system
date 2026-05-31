@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Knihovna;
 
 namespace Knihovna.Tests.Fakes
 {
@@ -11,7 +10,7 @@ namespace Knihovna.Tests.Fakes
 
         public List<Vypujcka> GetAll()
         {
-            return _vypujcky;
+            return _vypujcky.ToList();
         }
 
         public List<Vypujcka> GetActiveLoans()
@@ -42,9 +41,7 @@ namespace Knihovna.Tests.Fakes
 
         public void Add(Vypujcka vypujcka)
         {
-            vypujcka.Id = _nextId;
-            _nextId++;
-
+            vypujcka.Id = _nextId++;
             _vypujcky.Add(vypujcka);
         }
 
@@ -52,13 +49,11 @@ namespace Knihovna.Tests.Fakes
         {
             Vypujcka? vypujcka = GetById(id);
 
-            if (vypujcka == null)
+            if (vypujcka != null)
             {
-                return;
+                vypujcka.Stav = "Vracena";
+                vypujcka.DatumVraceni = System.DateTime.Now;
             }
-
-            vypujcka.Stav = "Vracena";
-            vypujcka.DatumVraceni = System.DateTime.Now;
         }
 
         public bool HasActiveLoanForBook(int knihaId)
@@ -73,6 +68,30 @@ namespace Knihovna.Tests.Fakes
             return _vypujcky.Any(v =>
                 v.CtenarId == ctenarId &&
                 v.Stav == "Aktivni");
+        }
+
+        public void DeleteByBookId(int knihaId)
+        {
+            var items = _vypujcky
+                .Where(v => v.KnihaId == knihaId)
+                .ToList();
+
+            foreach (var item in items)
+            {
+                _vypujcky.Remove(item);
+            }
+        }
+
+        public void DeleteByReaderId(int ctenarId)
+        {
+            var items = _vypujcky
+                .Where(v => v.CtenarId == ctenarId)
+                .ToList();
+
+            foreach (var item in items)
+            {
+                _vypujcky.Remove(item);
+            }
         }
     }
 }

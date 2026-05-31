@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace Knihovna
 {
@@ -33,34 +32,24 @@ namespace Knihovna
 
         public Result AddBook(Kniha kniha)
         {
-            if (kniha == null)
-            {
-                return Result.Fail("Kniha neexistuje.");
-            }
-
             if (string.IsNullOrWhiteSpace(kniha.Nazev))
             {
-                return Result.Fail("Název knihy nesmí být prázdný.");
+                return Result.Fail("Název knihy je povinný.");
             }
 
             if (string.IsNullOrWhiteSpace(kniha.Autor))
             {
-                return Result.Fail("Autor knihy nesmí být prázdný.");
+                return Result.Fail("Autor knihy je povinný.");
             }
 
             if (string.IsNullOrWhiteSpace(kniha.ISBN))
             {
-                return Result.Fail("ISBN nesmí být prázdné.");
+                return Result.Fail("ISBN je povinné.");
             }
 
             if (_knihaRepository.ExistsByIsbn(kniha.ISBN))
             {
-                return Result.Fail("Kniha se stejným ISBN už existuje.");
-            }
-
-            if (kniha.RokVydani < 1500 || kniha.RokVydani > DateTime.Now.Year)
-            {
-                return Result.Fail("Rok vydání není platný.");
+                return Result.Fail("Kniha s tímto ISBN už existuje.");
             }
 
             _knihaRepository.Add(kniha);
@@ -70,43 +59,21 @@ namespace Knihovna
 
         public Result UpdateBook(Kniha kniha)
         {
-            if (kniha == null)
+            Kniha? existingBook = _knihaRepository.GetById(kniha.Id);
+
+            if (existingBook == null)
             {
-                return Result.Fail("Kniha neexistuje.");
+                return Result.Fail("Kniha nebyla nalezena.");
             }
 
-            if (kniha.Id <= 0)
+            if (_vypujckaRepository.HasActiveLoanForBook(kniha.Id))
             {
-                return Result.Fail("Kniha nemá platné ID.");
+                return Result.Fail("Knihu nelze upravit, protože je aktuálně vypůjčená.");
             }
 
-            if (string.IsNullOrWhiteSpace(kniha.Nazev))
+            if (_rezervaceRepository.HasActiveReservationForBook(kniha.Id))
             {
-                return Result.Fail("Název knihy nesmí být prázdný.");
-            }
-
-            if (string.IsNullOrWhiteSpace(kniha.Autor))
-            {
-                return Result.Fail("Autor knihy nesmí být prázdný.");
-            }
-
-            if (string.IsNullOrWhiteSpace(kniha.ISBN))
-            {
-                return Result.Fail("ISBN nesmí být prázdné.");
-            }
-
-            if (kniha.RokVydani < 1500 || kniha.RokVydani > DateTime.Now.Year)
-            {
-                return Result.Fail("Rok vydání není platný.");
-            }
-
-            bool isbnPouzivaJinaKniha = _knihaRepository
-                .GetAll()
-                .Any(k => k.ISBN == kniha.ISBN && k.Id != kniha.Id);
-
-            if (isbnPouzivaJinaKniha)
-            {
-                return Result.Fail("Toto ISBN už používá jiná kniha.");
+                return Result.Fail("Knihu nelze upravit, protože má aktivní rezervace.");
             }
 
             _knihaRepository.Update(kniha);
@@ -133,6 +100,8 @@ namespace Knihovna
                 return Result.Fail("Knihu nelze smazat, protože má aktivní rezervace.");
             }
 
+            _rezervaceRepository.DeleteByBookId(knihaId);
+            _vypujckaRepository.DeleteByBookId(knihaId);
             _knihaRepository.Delete(knihaId);
 
             return Result.Ok("Kniha byla úspěšně smazána.");
@@ -140,44 +109,29 @@ namespace Knihovna
 
         public Result AddReader(Ctenar ctenar)
         {
-            if (ctenar == null)
-            {
-                return Result.Fail("Čtenář neexistuje.");
-            }
-
             if (string.IsNullOrWhiteSpace(ctenar.Jmeno))
             {
-                return Result.Fail("Jméno nesmí být prázdné.");
+                return Result.Fail("Jméno čtenáře je povinné.");
             }
 
             if (string.IsNullOrWhiteSpace(ctenar.Prijmeni))
             {
-                return Result.Fail("Příjmení nesmí být prázdné.");
+                return Result.Fail("Příjmení čtenáře je povinné.");
             }
 
             if (string.IsNullOrWhiteSpace(ctenar.Email))
             {
-                return Result.Fail("E-mail nesmí být prázdný.");
-            }
-
-            if (!ctenar.Email.Contains("@") || !ctenar.Email.Contains("."))
-            {
-                return Result.Fail("E-mail nemá platný formát.");
+                return Result.Fail("E-mail čtenáře je povinný.");
             }
 
             if (string.IsNullOrWhiteSpace(ctenar.TelefonniCislo))
             {
-                return Result.Fail("Telefonní číslo nesmí být prázdné.");
-            }
-
-            if (!ctenar.TelefonniCislo.All(char.IsDigit) || ctenar.TelefonniCislo.Length != 9)
-            {
-                return Result.Fail("Telefonní číslo musí mít 9 číslic.");
+                return Result.Fail("Telefonní číslo je povinné.");
             }
 
             if (_ctenarRepository.ExistsByEmail(ctenar.Email))
             {
-                return Result.Fail("Čtenář se stejným e-mailem už existuje.");
+                return Result.Fail("Čtenář s tímto e-mailem už existuje.");
             }
 
             _ctenarRepository.Add(ctenar);
@@ -187,53 +141,11 @@ namespace Knihovna
 
         public Result UpdateReader(Ctenar ctenar)
         {
-            if (ctenar == null)
-            {
-                return Result.Fail("Čtenář neexistuje.");
-            }
+            Ctenar? existingReader = _ctenarRepository.GetById(ctenar.Id);
 
-            if (ctenar.Id <= 0)
+            if (existingReader == null)
             {
-                return Result.Fail("Čtenář nemá platné ID.");
-            }
-
-            if (string.IsNullOrWhiteSpace(ctenar.Jmeno))
-            {
-                return Result.Fail("Jméno nesmí být prázdné.");
-            }
-
-            if (string.IsNullOrWhiteSpace(ctenar.Prijmeni))
-            {
-                return Result.Fail("Příjmení nesmí být prázdné.");
-            }
-
-            if (string.IsNullOrWhiteSpace(ctenar.Email))
-            {
-                return Result.Fail("E-mail nesmí být prázdný.");
-            }
-
-            if (!ctenar.Email.Contains("@") || !ctenar.Email.Contains("."))
-            {
-                return Result.Fail("E-mail nemá platný formát.");
-            }
-
-            if (string.IsNullOrWhiteSpace(ctenar.TelefonniCislo))
-            {
-                return Result.Fail("Telefonní číslo nesmí být prázdné.");
-            }
-
-            if (!ctenar.TelefonniCislo.All(char.IsDigit) || ctenar.TelefonniCislo.Length != 9)
-            {
-                return Result.Fail("Telefonní číslo musí mít 9 číslic.");
-            }
-
-            bool emailPouzivaJinyCtenar = _ctenarRepository
-                .GetAll()
-                .Any(c => c.Email == ctenar.Email && c.Id != ctenar.Id);
-
-            if (emailPouzivaJinyCtenar)
-            {
-                return Result.Fail("Tento e-mail už používá jiný čtenář.");
+                return Result.Fail("Čtenář nebyl nalezen.");
             }
 
             _ctenarRepository.Update(ctenar);
@@ -260,6 +172,8 @@ namespace Knihovna
                 return Result.Fail("Čtenáře nelze smazat, protože má aktivní rezervaci.");
             }
 
+            _rezervaceRepository.DeleteByReaderId(ctenarId);
+            _vypujckaRepository.DeleteByReaderId(ctenarId);
             _ctenarRepository.Delete(ctenarId);
 
             return Result.Ok("Čtenář byl úspěšně smazán.");
@@ -293,7 +207,15 @@ namespace Knihovna
                 return Result.Fail("Kniha je rezervovaná pro jiného čtenáře.");
             }
 
-            Vypujcka vypujcka = new Vypujcka(knihaId, ctenarId);
+            var vypujcka = new Vypujcka
+            {
+                KnihaId = knihaId,
+                CtenarId = ctenarId,
+                DatumVypujceni = DateTime.Now,
+                DatumVraceni = null,
+                Stav = "Aktivni"
+            };
+
             _vypujckaRepository.Add(vypujcka);
 
             if (prvniRezervace != null && prvniRezervace.CtenarId == ctenarId)
@@ -313,18 +235,18 @@ namespace Knihovna
                 return Result.Fail("Kniha nebyla nalezena.");
             }
 
-            Vypujcka? aktivniVypujcka = _vypujckaRepository.GetActiveLoanByBookId(knihaId);
+            Vypujcka? activeLoan = _vypujckaRepository.GetActiveLoanByBookId(knihaId);
 
-            if (aktivniVypujcka == null)
+            if (activeLoan == null)
             {
                 return Result.Fail("Kniha není aktuálně vypůjčená.");
             }
 
-            _vypujckaRepository.MarkAsReturned(aktivniVypujcka.Id);
+            _vypujckaRepository.MarkAsReturned(activeLoan.Id);
 
-            Rezervace? prvniRezervace = _rezervaceRepository.GetFirstActiveReservationByBookId(knihaId);
+            Rezervace? firstReservation = _rezervaceRepository.GetFirstActiveReservationByBookId(knihaId);
 
-            if (prvniRezervace != null)
+            if (firstReservation != null)
             {
                 return Result.Ok("Kniha byla vrácena. Čeká na prvního čtenáře v pořadníku rezervací.");
             }
@@ -348,14 +270,14 @@ namespace Knihovna
                 return Result.Fail("Čtenář nebyl nalezen.");
             }
 
-            Vypujcka? aktivniVypujcka = _vypujckaRepository.GetActiveLoanByBookId(knihaId);
-
-            if (aktivniVypujcka == null)
+            if (!_vypujckaRepository.HasActiveLoanForBook(knihaId))
             {
                 return Result.Fail("Dostupnou knihu nelze rezervovat, protože ji lze rovnou půjčit.");
             }
 
-            if (aktivniVypujcka.CtenarId == ctenarId)
+            Vypujcka? activeLoan = _vypujckaRepository.GetActiveLoanByBookId(knihaId);
+
+            if (activeLoan != null && activeLoan.CtenarId == ctenarId)
             {
                 return Result.Fail("Čtenář nemůže rezervovat knihu, kterou má právě vypůjčenou.");
             }
@@ -365,10 +287,17 @@ namespace Knihovna
                 return Result.Fail("Čtenář už má tuto knihu rezervovanou.");
             }
 
-            Rezervace rezervace = new Rezervace(knihaId, ctenarId);
+            var rezervace = new Rezervace
+            {
+                KnihaId = knihaId,
+                CtenarId = ctenarId,
+                DatumRezervace = DateTime.Now,
+                Stav = "Aktivni"
+            };
+
             _rezervaceRepository.Add(rezervace);
 
-            return Result.Ok("Rezervace byla úspěšně vytvořena.");
+            return Result.Ok("Kniha byla úspěšně rezervována.");
         }
 
         public Result CancelReservation(int rezervaceId)
@@ -382,12 +311,12 @@ namespace Knihovna
 
             if (rezervace.Stav != "Aktivni")
             {
-                return Result.Fail("Zrušit lze pouze aktivní rezervaci.");
+                return Result.Fail("Rezervace už není aktivní.");
             }
 
             _rezervaceRepository.Cancel(rezervaceId);
 
-            return Result.Ok("Rezervace byla úspěšně zrušena.");
+            return Result.Ok("Rezervace byla zrušena.");
         }
     }
 }
