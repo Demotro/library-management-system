@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace Knihovna
 {
@@ -47,6 +48,11 @@ namespace Knihovna
                 return Result.Fail("ISBN je povinné.");
             }
 
+            if (!IsValidIsbn(kniha.ISBN))
+            {
+                return Result.Fail("ISBN musí mít 10 nebo 13 číslic.");
+            }
+
             if (_knihaRepository.ExistsByIsbn(kniha.ISBN))
             {
                 return Result.Fail("Kniha s tímto ISBN už existuje.");
@@ -79,6 +85,11 @@ namespace Knihovna
             if (string.IsNullOrWhiteSpace(kniha.ISBN))
             {
                 return Result.Fail("ISBN je povinné.");
+            }
+
+            if (!IsValidIsbn(kniha.ISBN))
+            {
+                return Result.Fail("ISBN musí mít 10 nebo 13 číslic.");
             }
 
             if (_knihaRepository.ExistsByIsbnExceptId(kniha.ISBN, kniha.Id))
@@ -144,9 +155,19 @@ namespace Knihovna
                 return Result.Fail("E-mail čtenáře je povinný.");
             }
 
+            if (!IsValidEmail(ctenar.Email))
+            {
+                return Result.Fail("E-mail musí být ve správném formátu.");
+            }
+
             if (string.IsNullOrWhiteSpace(ctenar.TelefonniCislo))
             {
                 return Result.Fail("Telefonní číslo je povinné.");
+            }
+
+            if (!IsValidPhoneNumber(ctenar.TelefonniCislo))
+            {
+                return Result.Fail("Telefonní číslo musí mít 9 číslic.");
             }
 
             if (_ctenarRepository.ExistsByEmail(ctenar.Email))
@@ -183,9 +204,19 @@ namespace Knihovna
                 return Result.Fail("E-mail čtenáře je povinný.");
             }
 
+            if (!IsValidEmail(ctenar.Email))
+            {
+                return Result.Fail("E-mail musí být ve správném formátu.");
+            }
+
             if (string.IsNullOrWhiteSpace(ctenar.TelefonniCislo))
             {
                 return Result.Fail("Telefonní číslo je povinné.");
+            }
+
+            if (!IsValidPhoneNumber(ctenar.TelefonniCislo))
+            {
+                return Result.Fail("Telefonní číslo musí mít 9 číslic.");
             }
 
             if (_ctenarRepository.ExistsByEmailExceptId(ctenar.Email, ctenar.Id))
@@ -362,6 +393,24 @@ namespace Knihovna
             _rezervaceRepository.Cancel(rezervaceId);
 
             return Result.Ok("Rezervace byla zrušena.");
+        }
+
+        private bool IsValidIsbn(string isbn)
+        {
+            string isbnOnlyDigits = isbn.Replace("-", "").Replace(" ", "");
+
+            return isbnOnlyDigits.All(char.IsDigit) &&
+                   (isbnOnlyDigits.Length == 10 || isbnOnlyDigits.Length == 13);
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            return email.Contains("@") && email.Contains(".");
+        }
+
+        private bool IsValidPhoneNumber(string phoneNumber)
+        {
+            return phoneNumber.All(char.IsDigit) && phoneNumber.Length == 9;
         }
     }
 }
