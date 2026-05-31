@@ -53,6 +53,8 @@ namespace Knihovna
                 return Result.Fail("ISBN musí mít 10 nebo 13 číslic.");
             }
 
+            kniha.ISBN = NormalizeIsbn(kniha.ISBN);
+
             if (_knihaRepository.ExistsByIsbn(kniha.ISBN))
             {
                 return Result.Fail("Kniha s tímto ISBN už existuje.");
@@ -91,6 +93,8 @@ namespace Knihovna
             {
                 return Result.Fail("ISBN musí mít 10 nebo 13 číslic.");
             }
+
+            kniha.ISBN = NormalizeIsbn(kniha.ISBN);
 
             if (_knihaRepository.ExistsByIsbnExceptId(kniha.ISBN, kniha.Id))
             {
@@ -397,10 +401,15 @@ namespace Knihovna
 
         private bool IsValidIsbn(string isbn)
         {
-            string isbnOnlyDigits = isbn.Replace("-", "").Replace(" ", "");
+            string normalizedIsbn = NormalizeIsbn(isbn);
 
-            return isbnOnlyDigits.All(char.IsDigit) &&
-                   (isbnOnlyDigits.Length == 10 || isbnOnlyDigits.Length == 13);
+            return normalizedIsbn.All(char.IsDigit) &&
+                   (normalizedIsbn.Length == 10 || normalizedIsbn.Length == 13);
+        }
+
+        private string NormalizeIsbn(string isbn)
+        {
+            return isbn.Replace("-", "").Replace(" ", "");
         }
 
         private bool IsValidEmail(string email)
