@@ -68,6 +68,19 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void AddBook_WhenTitleHasMaximumLength_ShouldSucceed()
+        {
+            string title = new string('A', 100);
+            var kniha = new DobraKniha(title, "Test Author", "1234567890", 2020);
+
+            Result result = _service.AddBook(kniha);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Kniha byla úspěšně přidána.", result.Message);
+            Assert.AreEqual(100, kniha.Nazev.Length);
+        }
+
+        [TestMethod]
         public void AddBook_WhenAuthorIsTooLong_ShouldFail()
         {
             string longAuthor = new string('A', 101);
@@ -77,6 +90,19 @@ namespace Knihovna.Tests
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Autor knihy může mít maximálně 100 znaků.", result.Message);
+        }
+
+        [TestMethod]
+        public void AddBook_WhenAuthorHasMaximumLength_ShouldSucceed()
+        {
+            string author = new string('A', 100);
+            var kniha = new DobraKniha("Test Book", author, "1234567890", 2020);
+
+            Result result = _service.AddBook(kniha);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Kniha byla úspěšně přidána.", result.Message);
+            Assert.AreEqual(100, kniha.Autor.Length);
         }
 
         [TestMethod]
@@ -329,6 +355,19 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void AddReader_WhenNameHasMaximumLength_ShouldSucceed()
+        {
+            string name = new string('A', 50);
+            var ctenar = new Ctenar(name, "Novak", "123456789", "jan@test.cz");
+
+            Result result = _service.AddReader(ctenar);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Čtenář byl úspěšně přidán.", result.Message);
+            Assert.AreEqual(50, ctenar.Jmeno.Length);
+        }
+
+        [TestMethod]
         public void AddReader_WhenSurnameIsTooLong_ShouldFail()
         {
             string longSurname = new string('A', 51);
@@ -338,6 +377,19 @@ namespace Knihovna.Tests
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Příjmení čtenáře může mít maximálně 50 znaků.", result.Message);
+        }
+
+        [TestMethod]
+        public void AddReader_WhenSurnameHasMaximumLength_ShouldSucceed()
+        {
+            string surname = new string('A', 50);
+            var ctenar = new Ctenar("Jan", surname, "123456789", "jan@test.cz");
+
+            Result result = _service.AddReader(ctenar);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Čtenář byl úspěšně přidán.", result.Message);
+            Assert.AreEqual(50, ctenar.Prijmeni.Length);
         }
 
         [TestMethod]
