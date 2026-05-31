@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Knihovna.Tests.Fakes;
 
@@ -281,6 +282,57 @@ namespace Knihovna.Tests
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Čtenář nemůže rezervovat knihu, kterou má právě vypůjčenou.", result.Message);
+        }
+
+        [TestMethod]
+        public void CancelReservation_WhenReservationExists_ShouldCancelReservation()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+            var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "petr@test.cz");
+
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar1);
+            _ctenarRepository.Add(ctenar2);
+
+            _service.BorrowBook(kniha.Id, ctenar1.Id);
+            _service.ReserveBook(kniha.Id, ctenar2.Id);
+
+            Rezervace rezervace = _rezervaceRepository.GetAll().First();
+
+            Result result = _service.CancelReservation(rezervace.Id);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Rezervace byla zrušena.", result.Message);
+            Assert.AreEqual("Zrusena", rezervace.Stav);
+        }
+
+        [TestMethod]
+        public void CancelReservation_WhenReservationDoesNotExist_ShouldFail()
+        {
+            Result result = _service.CancelReservation(999);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Rezervace nebyla nalezena.", result.Message);
+        }
+
+        [TestMethod]
+        public void CancelReservation_WhenReservationIsAlreadyCancelled_ShouldFail()
+        {
+            var rezervace = new Rezervace
+            {
+                KnihaId = 1,
+                CtenarId = 1,
+                DatumRezervace = DateTime.Now,
+                Stav = "Zrusena"
+            };
+
+            _rezervaceRepository.Add(rezervace);
+
+            Result result = _service.CancelReservation(rezervace.Id);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Rezervace už není aktivní.", result.Message);
         }
 
         [TestMethod]
