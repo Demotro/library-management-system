@@ -289,5 +289,119 @@ namespace Knihovna.Tests
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Knihu nelze smazat, protože má aktivní rezervace.", result.Message);
         }
+
+        [TestMethod]
+        public void UpdateBook_WhenIsbnBelongsToAnotherBook_ShouldFail()
+        {
+            var knihaRepository = new FakeKnihaRepository();
+            var ctenarRepository = new FakeCtenarRepository();
+            var vypujckaRepository = new FakeVypujckaRepository();
+            var rezervaceRepository = new FakeRezervaceRepository();
+
+            var service = CreateService(
+                knihaRepository,
+                ctenarRepository,
+                vypujckaRepository,
+                rezervaceRepository
+            );
+
+            var kniha1 = new DobraKniha("Book One", "Author One", "1234567890", 2020);
+            var kniha2 = new DobraKniha("Book Two", "Author Two", "0987654321", 2021);
+
+            knihaRepository.Add(kniha1);
+            knihaRepository.Add(kniha2);
+
+            var upravenaKniha = new DobraKniha("Book Two Updated", "Author Two", "1234567890", 2021);
+            upravenaKniha.Id = kniha2.Id;
+
+            Result result = service.UpdateBook(upravenaKniha);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Jiná kniha s tímto ISBN už existuje.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateBook_WhenIsbnBelongsToSameBook_ShouldSucceed()
+        {
+            var knihaRepository = new FakeKnihaRepository();
+            var ctenarRepository = new FakeCtenarRepository();
+            var vypujckaRepository = new FakeVypujckaRepository();
+            var rezervaceRepository = new FakeRezervaceRepository();
+
+            var service = CreateService(
+                knihaRepository,
+                ctenarRepository,
+                vypujckaRepository,
+                rezervaceRepository
+            );
+
+            var kniha = new DobraKniha("Book One", "Author One", "1234567890", 2020);
+            knihaRepository.Add(kniha);
+
+            var upravenaKniha = new DobraKniha("Book One Updated", "Author One Updated", "1234567890", 2022);
+            upravenaKniha.Id = kniha.Id;
+
+            Result result = service.UpdateBook(upravenaKniha);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Kniha byla úspěšně upravena.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateReader_WhenEmailBelongsToAnotherReader_ShouldFail()
+        {
+            var knihaRepository = new FakeKnihaRepository();
+            var ctenarRepository = new FakeCtenarRepository();
+            var vypujckaRepository = new FakeVypujckaRepository();
+            var rezervaceRepository = new FakeRezervaceRepository();
+
+            var service = CreateService(
+                knihaRepository,
+                ctenarRepository,
+                vypujckaRepository,
+                rezervaceRepository
+            );
+
+            var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "petr@test.cz");
+
+            ctenarRepository.Add(ctenar1);
+            ctenarRepository.Add(ctenar2);
+
+            var upravenyCtenar = new Ctenar("Petr", "Svoboda", "987654321", "jan@test.cz");
+            upravenyCtenar.Id = ctenar2.Id;
+
+            Result result = service.UpdateReader(upravenyCtenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Jiný čtenář s tímto e-mailem už existuje.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateReader_WhenEmailBelongsToSameReader_ShouldSucceed()
+        {
+            var knihaRepository = new FakeKnihaRepository();
+            var ctenarRepository = new FakeCtenarRepository();
+            var vypujckaRepository = new FakeVypujckaRepository();
+            var rezervaceRepository = new FakeRezervaceRepository();
+
+            var service = CreateService(
+                knihaRepository,
+                ctenarRepository,
+                vypujckaRepository,
+                rezervaceRepository
+            );
+
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            ctenarRepository.Add(ctenar);
+
+            var upravenyCtenar = new Ctenar("Jan", "Novotny", "123456789", "jan@test.cz");
+            upravenyCtenar.Id = ctenar.Id;
+
+            Result result = service.UpdateReader(upravenyCtenar);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Čtenář byl úspěšně upraven.", result.Message);
+        }
     }
 }
