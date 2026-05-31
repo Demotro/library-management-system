@@ -393,6 +393,51 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void UpdateReader_WhenEmailHasMultipleAtSymbols_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            var upravenyCtenar = new Ctenar("Jan", "Novak", "123456789", "jan@@test.cz");
+            upravenyCtenar.Id = ctenar.Id;
+
+            Result result = _service.UpdateReader(upravenyCtenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("E-mail musí být ve správném formátu.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateReader_WhenEmailDomainStartsWithDot_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            var upravenyCtenar = new Ctenar("Jan", "Novak", "123456789", "jan@.cz");
+            upravenyCtenar.Id = ctenar.Id;
+
+            Result result = _service.UpdateReader(upravenyCtenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("E-mail musí být ve správném formátu.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateReader_WhenEmailDomainEndsWithDot_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            var upravenyCtenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.");
+            upravenyCtenar.Id = ctenar.Id;
+
+            Result result = _service.UpdateReader(upravenyCtenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("E-mail musí být ve správném formátu.", result.Message);
+        }
+
+        [TestMethod]
         public void UpdateReader_WhenPhoneNumberHasInvalidFormat_ShouldFail()
         {
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
