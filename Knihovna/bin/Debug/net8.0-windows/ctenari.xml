@@ -167,13 +167,6 @@
     <TelefonniCislo>732789456</TelefonniCislo>
     <Vypujcene>
       <Kniha xsi:type="NovaKniha">
-        <Nazev>1984</Nazev>
-        <Autor>George Orwell</Autor>
-        <ISBN>17</ISBN>
-        <RokVydani>1949</RokVydani>
-        <Dostupnost>false</Dostupnost>
-      </Kniha>
-      <Kniha xsi:type="NovaKniha">
         <Nazev>Anna Karenina</Nazev>
         <Autor>Lev Tolstoj</Autor>
         <ISBN>52</ISBN>
@@ -185,6 +178,13 @@
         <Autor>F. Scott Fitzgerald</Autor>
         <ISBN>1</ISBN>
         <RokVydani>1925</RokVydani>
+        <Dostupnost>false</Dostupnost>
+      </Kniha>
+      <Kniha xsi:type="NovaKniha">
+        <Nazev>1984</Nazev>
+        <Autor>George Orwell</Autor>
+        <ISBN>17</ISBN>
+        <RokVydani>1949</RokVydani>
         <Dostupnost>false</Dostupnost>
       </Kniha>
     </Vypujcene>
