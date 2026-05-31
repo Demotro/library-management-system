@@ -56,6 +56,30 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void AddBook_WhenTitleIsTooLong_ShouldFail()
+        {
+            string longTitle = new string('A', 101);
+            var kniha = new DobraKniha(longTitle, "Test Author", "1234567890", 2020);
+
+            Result result = _service.AddBook(kniha);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Název knihy může mít maximálně 100 znaků.", result.Message);
+        }
+
+        [TestMethod]
+        public void AddBook_WhenAuthorIsTooLong_ShouldFail()
+        {
+            string longAuthor = new string('A', 101);
+            var kniha = new DobraKniha("Test Book", longAuthor, "1234567890", 2020);
+
+            Result result = _service.AddBook(kniha);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Autor knihy může mít maximálně 100 znaků.", result.Message);
+        }
+
+        [TestMethod]
         public void AddBook_WhenPublicationYearIsTooLow_ShouldFail()
         {
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 1449);
@@ -206,6 +230,38 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void UpdateBook_WhenTitleIsTooLong_ShouldFail()
+        {
+            var kniha = new DobraKniha("Old Book", "Old Author", "1234567890", 2020);
+            _knihaRepository.Add(kniha);
+
+            string longTitle = new string('A', 101);
+            var upravenaKniha = new DobraKniha(longTitle, "Updated Author", "1234567890", 2021);
+            upravenaKniha.Id = kniha.Id;
+
+            Result result = _service.UpdateBook(upravenaKniha);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Název knihy může mít maximálně 100 znaků.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateBook_WhenAuthorIsTooLong_ShouldFail()
+        {
+            var kniha = new DobraKniha("Old Book", "Old Author", "1234567890", 2020);
+            _knihaRepository.Add(kniha);
+
+            string longAuthor = new string('A', 101);
+            var upravenaKniha = new DobraKniha("Updated Book", longAuthor, "1234567890", 2021);
+            upravenaKniha.Id = kniha.Id;
+
+            Result result = _service.UpdateBook(upravenaKniha);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Autor knihy může mít maximálně 100 znaků.", result.Message);
+        }
+
+        [TestMethod]
         public void UpdateBook_WhenPublicationYearIsTooLow_ShouldFail()
         {
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
@@ -258,6 +314,42 @@ namespace Knihovna.Tests
             Assert.AreEqual("Čtenář byl úspěšně přidán.", result.Message);
             Assert.AreEqual("Jan", ctenar.Jmeno);
             Assert.AreEqual("Novak", ctenar.Prijmeni);
+        }
+
+        [TestMethod]
+        public void AddReader_WhenNameIsTooLong_ShouldFail()
+        {
+            string longName = new string('A', 51);
+            var ctenar = new Ctenar(longName, "Novak", "123456789", "jan@test.cz");
+
+            Result result = _service.AddReader(ctenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Jméno čtenáře může mít maximálně 50 znaků.", result.Message);
+        }
+
+        [TestMethod]
+        public void AddReader_WhenSurnameIsTooLong_ShouldFail()
+        {
+            string longSurname = new string('A', 51);
+            var ctenar = new Ctenar("Jan", longSurname, "123456789", "jan@test.cz");
+
+            Result result = _service.AddReader(ctenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Příjmení čtenáře může mít maximálně 50 znaků.", result.Message);
+        }
+
+        [TestMethod]
+        public void AddReader_WhenEmailIsTooLong_ShouldFail()
+        {
+            string longEmail = new string('a', 95) + "@test.cz";
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", longEmail);
+
+            Result result = _service.AddReader(ctenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("E-mail čtenáře může mít maximálně 100 znaků.", result.Message);
         }
 
         [TestMethod]
@@ -393,6 +485,54 @@ namespace Knihovna.Tests
             Assert.AreEqual("Čtenář byl úspěšně upraven.", result.Message);
             Assert.AreEqual("Petr", upravenyCtenar.Jmeno);
             Assert.AreEqual("Svoboda", upravenyCtenar.Prijmeni);
+        }
+
+        [TestMethod]
+        public void UpdateReader_WhenNameIsTooLong_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            string longName = new string('A', 51);
+            var upravenyCtenar = new Ctenar(longName, "Novak", "123456789", "jan@test.cz");
+            upravenyCtenar.Id = ctenar.Id;
+
+            Result result = _service.UpdateReader(upravenyCtenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Jméno čtenáře může mít maximálně 50 znaků.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateReader_WhenSurnameIsTooLong_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            string longSurname = new string('A', 51);
+            var upravenyCtenar = new Ctenar("Jan", longSurname, "123456789", "jan@test.cz");
+            upravenyCtenar.Id = ctenar.Id;
+
+            Result result = _service.UpdateReader(upravenyCtenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Příjmení čtenáře může mít maximálně 50 znaků.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateReader_WhenEmailIsTooLong_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            string longEmail = new string('a', 95) + "@test.cz";
+            var upravenyCtenar = new Ctenar("Jan", "Novak", "123456789", longEmail);
+            upravenyCtenar.Id = ctenar.Id;
+
+            Result result = _service.UpdateReader(upravenyCtenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("E-mail čtenáře může mít maximálně 100 znaků.", result.Message);
         }
 
         [TestMethod]

@@ -6,6 +6,12 @@ namespace Knihovna
 {
     public class LibraryService
     {
+        private const int MaxBookTitleLength = 100;
+        private const int MaxBookAuthorLength = 100;
+        private const int MaxReaderNameLength = 50;
+        private const int MaxReaderSurnameLength = 50;
+        private const int MaxReaderEmailLength = 100;
+
         private readonly IKnihaRepository _knihaRepository;
         private readonly ICtenarRepository _ctenarRepository;
         private readonly IVypujckaRepository _vypujckaRepository;
@@ -46,6 +52,16 @@ namespace Knihovna
 
             kniha.Nazev = kniha.Nazev.Trim();
             kniha.Autor = kniha.Autor.Trim();
+
+            if (kniha.Nazev.Length > MaxBookTitleLength)
+            {
+                return Result.Fail("Název knihy může mít maximálně 100 znaků.");
+            }
+
+            if (kniha.Autor.Length > MaxBookAuthorLength)
+            {
+                return Result.Fail("Autor knihy může mít maximálně 100 znaků.");
+            }
 
             if (!IsValidPublicationYear(kniha.RokVydani))
             {
@@ -95,6 +111,16 @@ namespace Knihovna
 
             kniha.Nazev = kniha.Nazev.Trim();
             kniha.Autor = kniha.Autor.Trim();
+
+            if (kniha.Nazev.Length > MaxBookTitleLength)
+            {
+                return Result.Fail("Název knihy může mít maximálně 100 znaků.");
+            }
+
+            if (kniha.Autor.Length > MaxBookAuthorLength)
+            {
+                return Result.Fail("Autor knihy může mít maximálně 100 znaků.");
+            }
 
             if (!IsValidPublicationYear(kniha.RokVydani))
             {
@@ -174,17 +200,32 @@ namespace Knihovna
             ctenar.Jmeno = ctenar.Jmeno.Trim();
             ctenar.Prijmeni = ctenar.Prijmeni.Trim();
 
+            if (ctenar.Jmeno.Length > MaxReaderNameLength)
+            {
+                return Result.Fail("Jméno čtenáře může mít maximálně 50 znaků.");
+            }
+
+            if (ctenar.Prijmeni.Length > MaxReaderSurnameLength)
+            {
+                return Result.Fail("Příjmení čtenáře může mít maximálně 50 znaků.");
+            }
+
             if (string.IsNullOrWhiteSpace(ctenar.Email))
             {
                 return Result.Fail("E-mail čtenáře je povinný.");
+            }
+
+            ctenar.Email = NormalizeEmail(ctenar.Email);
+
+            if (ctenar.Email.Length > MaxReaderEmailLength)
+            {
+                return Result.Fail("E-mail čtenáře může mít maximálně 100 znaků.");
             }
 
             if (!IsValidEmail(ctenar.Email))
             {
                 return Result.Fail("E-mail musí být ve správném formátu.");
             }
-
-            ctenar.Email = NormalizeEmail(ctenar.Email);
 
             if (string.IsNullOrWhiteSpace(ctenar.TelefonniCislo))
             {
@@ -230,17 +271,32 @@ namespace Knihovna
             ctenar.Jmeno = ctenar.Jmeno.Trim();
             ctenar.Prijmeni = ctenar.Prijmeni.Trim();
 
+            if (ctenar.Jmeno.Length > MaxReaderNameLength)
+            {
+                return Result.Fail("Jméno čtenáře může mít maximálně 50 znaků.");
+            }
+
+            if (ctenar.Prijmeni.Length > MaxReaderSurnameLength)
+            {
+                return Result.Fail("Příjmení čtenáře může mít maximálně 50 znaků.");
+            }
+
             if (string.IsNullOrWhiteSpace(ctenar.Email))
             {
                 return Result.Fail("E-mail čtenáře je povinný.");
+            }
+
+            ctenar.Email = NormalizeEmail(ctenar.Email);
+
+            if (ctenar.Email.Length > MaxReaderEmailLength)
+            {
+                return Result.Fail("E-mail čtenáře může mít maximálně 100 znaků.");
             }
 
             if (!IsValidEmail(ctenar.Email))
             {
                 return Result.Fail("E-mail musí být ve správném formátu.");
             }
-
-            ctenar.Email = NormalizeEmail(ctenar.Email);
 
             if (string.IsNullOrWhiteSpace(ctenar.TelefonniCislo))
             {
