@@ -29,6 +29,10 @@
         private void InitializeComponent()
         {
             dgvCtenari = new DataGridView();
+            Jméno = new DataGridViewTextBoxColumn();
+            Příjmení = new DataGridViewTextBoxColumn();
+            Email = new DataGridViewTextBoxColumn();
+            TelefonniCislo = new DataGridViewTextBoxColumn();
             lblCtenari = new Label();
             dgvKnihy = new DataGridView();
             Nazev = new DataGridViewTextBoxColumn();
@@ -43,31 +47,30 @@
             btnNovyCtenar = new Button();
             btnEditaceCtenare = new Button();
             dgvVypujcene = new DataGridView();
-            lblVypujceneKnihy = new Label();
-            btnNovaKniha = new Button();
-            btnEditaceKnihy = new Button();
-            dgvRezervovane = new DataGridView();
-            btnRezervovat = new Button();
-            btnZrusit = new Button();
-            btnSmazatKnihu = new Button();
-            btnSmazatCtenare = new Button();
-            lblRezervovaneKnihy = new Label();
             Nazev1 = new DataGridViewTextBoxColumn();
             Autor1 = new DataGridViewTextBoxColumn();
             Dostupnost1 = new DataGridViewCheckBoxColumn();
             ISBN1 = new DataGridViewTextBoxColumn();
             RokVydani1 = new DataGridViewTextBoxColumn();
             StavKnihy1 = new DataGridViewTextBoxColumn();
+            lblVypujceneKnihy = new Label();
+            btnNovaKniha = new Button();
+            btnEditaceKnihy = new Button();
+            dgvRezervovane = new DataGridView();
             Nazev2 = new DataGridViewTextBoxColumn();
             Autor2 = new DataGridViewTextBoxColumn();
             Dostupnost2 = new DataGridViewCheckBoxColumn();
             ISBN2 = new DataGridViewTextBoxColumn();
             RokVydani2 = new DataGridViewTextBoxColumn();
             StavKnihy2 = new DataGridViewTextBoxColumn();
-            Jméno = new DataGridViewTextBoxColumn();
-            Příjmení = new DataGridViewTextBoxColumn();
-            Email = new DataGridViewTextBoxColumn();
-            TelefonniCislo = new DataGridViewTextBoxColumn();
+            btnRezervovat = new Button();
+            btnZrusit = new Button();
+            btnSmazatKnihu = new Button();
+            btnSmazatCtenare = new Button();
+            lblRezervovaneKnihy = new Label();
+            lblHledatKnihu = new Label();
+            txtHledatKnihu = new TextBox();
+            btnVymazatHledaniKnih = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvCtenari).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvKnihy).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvVypujcene).BeginInit();
@@ -88,10 +91,42 @@
             dgvCtenari.TabIndex = 0;
             dgvCtenari.SelectionChanged += dgvCtenari_SelectionChanged;
             // 
+            // Jméno
+            // 
+            Jméno.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            Jméno.DataPropertyName = "Jmeno";
+            Jméno.HeaderText = "Jméno";
+            Jméno.Name = "Jméno";
+            Jméno.Width = 67;
+            // 
+            // Příjmení
+            // 
+            Příjmení.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            Příjmení.DataPropertyName = "Prijmeni";
+            Příjmení.HeaderText = "Příjmení";
+            Příjmení.Name = "Příjmení";
+            Příjmení.Width = 76;
+            // 
+            // Email
+            // 
+            Email.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            Email.DataPropertyName = "Email";
+            Email.HeaderText = "E-mail";
+            Email.Name = "Email";
+            Email.Width = 66;
+            // 
+            // TelefonniCislo
+            // 
+            TelefonniCislo.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            TelefonniCislo.DataPropertyName = "TelefonniCislo";
+            TelefonniCislo.HeaderText = "Telefonní číslo";
+            TelefonniCislo.Name = "TelefonniCislo";
+            TelefonniCislo.Width = 108;
+            // 
             // lblCtenari
             // 
             lblCtenari.AutoSize = true;
-            lblCtenari.Location = new Point(12, 23);
+            lblCtenari.Location = new Point(12, 19);
             lblCtenari.Name = "lblCtenari";
             lblCtenari.Size = new Size(94, 15);
             lblCtenari.TabIndex = 1;
@@ -161,7 +196,7 @@
             // lblSeznamKnih
             // 
             lblSeznamKnih.AutoSize = true;
-            lblSeznamKnih.Location = new Point(544, 23);
+            lblSeznamKnih.Location = new Point(544, 19);
             lblSeznamKnih.Name = "lblSeznamKnih";
             lblSeznamKnih.Size = new Size(77, 15);
             lblSeznamKnih.TabIndex = 3;
@@ -220,6 +255,54 @@
             dgvVypujcene.Size = new Size(518, 197);
             dgvVypujcene.TabIndex = 8;
             // 
+            // Nazev1
+            // 
+            Nazev1.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            Nazev1.DataPropertyName = "Nazev";
+            Nazev1.HeaderText = "Název";
+            Nazev1.Name = "Nazev1";
+            Nazev1.Width = 64;
+            // 
+            // Autor1
+            // 
+            Autor1.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            Autor1.DataPropertyName = "Autor";
+            Autor1.HeaderText = "Autor";
+            Autor1.Name = "Autor1";
+            Autor1.Width = 62;
+            // 
+            // Dostupnost1
+            // 
+            Dostupnost1.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            Dostupnost1.DataPropertyName = "Dostupnost";
+            Dostupnost1.HeaderText = "Dostupnost";
+            Dostupnost1.Name = "Dostupnost1";
+            Dostupnost1.Width = 74;
+            // 
+            // ISBN1
+            // 
+            ISBN1.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            ISBN1.DataPropertyName = "ISBN";
+            ISBN1.HeaderText = "ISBN";
+            ISBN1.Name = "ISBN1";
+            ISBN1.Width = 57;
+            // 
+            // RokVydani1
+            // 
+            RokVydani1.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            RokVydani1.DataPropertyName = "RokVydani";
+            RokVydani1.HeaderText = "Rok vydání";
+            RokVydani1.Name = "RokVydani1";
+            RokVydani1.Width = 90;
+            // 
+            // StavKnihy1
+            // 
+            StavKnihy1.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            StavKnihy1.DataPropertyName = "StavKnihy";
+            StavKnihy1.HeaderText = "Stav knihy";
+            StavKnihy1.Name = "StavKnihy1";
+            StavKnihy1.Width = 86;
+            // 
             // lblVypujceneKnihy
             // 
             lblVypujceneKnihy.AutoSize = true;
@@ -261,6 +344,54 @@
             dgvRezervovane.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvRezervovane.Size = new Size(518, 197);
             dgvRezervovane.TabIndex = 12;
+            // 
+            // Nazev2
+            // 
+            Nazev2.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            Nazev2.DataPropertyName = "Nazev";
+            Nazev2.HeaderText = "Název";
+            Nazev2.Name = "Nazev2";
+            Nazev2.Width = 64;
+            // 
+            // Autor2
+            // 
+            Autor2.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            Autor2.DataPropertyName = "Autor";
+            Autor2.HeaderText = "Autor";
+            Autor2.Name = "Autor2";
+            Autor2.Width = 62;
+            // 
+            // Dostupnost2
+            // 
+            Dostupnost2.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            Dostupnost2.DataPropertyName = "Dostupnost";
+            Dostupnost2.HeaderText = "Dostupnost";
+            Dostupnost2.Name = "Dostupnost2";
+            Dostupnost2.Width = 74;
+            // 
+            // ISBN2
+            // 
+            ISBN2.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            ISBN2.DataPropertyName = "ISBN";
+            ISBN2.HeaderText = "ISBN";
+            ISBN2.Name = "ISBN2";
+            ISBN2.Width = 57;
+            // 
+            // RokVydani2
+            // 
+            RokVydani2.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            RokVydani2.DataPropertyName = "RokVydani";
+            RokVydani2.HeaderText = "Rok vydání";
+            RokVydani2.Name = "RokVydani2";
+            RokVydani2.Width = 90;
+            // 
+            // StavKnihy2
+            // 
+            StavKnihy2.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            StavKnihy2.DataPropertyName = "StavKnihy";
+            StavKnihy2.HeaderText = "Stav knihy";
+            StavKnihy2.Name = "StavKnihy2";
+            StavKnihy2.Width = 86;
             // 
             // btnRezervovat
             // 
@@ -311,139 +442,41 @@
             lblRezervovaneKnihy.TabIndex = 17;
             lblRezervovaneKnihy.Text = "Rezervované knihy:";
             // 
-            // Nazev1
+            // lblHledatKnihu
             // 
-            Nazev1.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            Nazev1.DataPropertyName = "Nazev";
-            Nazev1.HeaderText = "Název";
-            Nazev1.Name = "Nazev1";
-            Nazev1.Width = 64;
+            lblHledatKnihu.AutoSize = true;
+            lblHledatKnihu.Location = new Point(797, 19);
+            lblHledatKnihu.Name = "lblHledatKnihu";
+            lblHledatKnihu.Size = new Size(78, 15);
+            lblHledatKnihu.TabIndex = 18;
+            lblHledatKnihu.Text = "Hledat knihu:";
             // 
-            // Autor1
+            // txtHledatKnihu
             // 
-            Autor1.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            Autor1.DataPropertyName = "Autor";
-            Autor1.HeaderText = "Autor";
-            Autor1.Name = "Autor1";
-            Autor1.Width = 62;
+            txtHledatKnihu.Location = new Point(881, 15);
+            txtHledatKnihu.Name = "txtHledatKnihu";
+            txtHledatKnihu.Size = new Size(100, 23);
+            txtHledatKnihu.TabIndex = 19;
+            txtHledatKnihu.TextChanged += txtHledatKnihu_TextChanged;
             // 
-            // Dostupnost1
+            // btnVymazatHledaniKnih
             // 
-            Dostupnost1.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            Dostupnost1.DataPropertyName = "Dostupnost";
-            Dostupnost1.HeaderText = "Dostupnost";
-            Dostupnost1.Name = "Dostupnost1";
-            Dostupnost1.Width = 74;
-            // 
-            // ISBN1
-            // 
-            ISBN1.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            ISBN1.DataPropertyName = "ISBN";
-            ISBN1.HeaderText = "ISBN";
-            ISBN1.Name = "ISBN1";
-            ISBN1.Width = 57;
-            // 
-            // RokVydani1
-            // 
-            RokVydani1.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            RokVydani1.DataPropertyName = "RokVydani";
-            RokVydani1.HeaderText = "Rok vydání";
-            RokVydani1.Name = "RokVydani1";
-            RokVydani1.Width = 90;
-            // 
-            // StavKnihy1
-            // 
-            StavKnihy1.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            StavKnihy1.DataPropertyName = "StavKnihy";
-            StavKnihy1.HeaderText = "Stav knihy";
-            StavKnihy1.Name = "StavKnihy1";
-            StavKnihy1.Width = 86;
-            // 
-            // Nazev2
-            // 
-            Nazev2.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            Nazev2.DataPropertyName = "Nazev";
-            Nazev2.HeaderText = "Název";
-            Nazev2.Name = "Nazev2";
-            Nazev2.Width = 64;
-            // 
-            // Autor2
-            // 
-            Autor2.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            Autor2.DataPropertyName = "Autor";
-            Autor2.HeaderText = "Autor";
-            Autor2.Name = "Autor2";
-            Autor2.Width = 62;
-            // 
-            // Dostupnost2
-            // 
-            Dostupnost2.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            Dostupnost2.DataPropertyName = "Dostupnost";
-            Dostupnost2.HeaderText = "Dostupnost";
-            Dostupnost2.Name = "Dostupnost2";
-            Dostupnost2.Width = 74;
-            // 
-            // ISBN2
-            // 
-            ISBN2.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            ISBN2.DataPropertyName = "ISBN";
-            ISBN2.HeaderText = "ISBN";
-            ISBN2.Name = "ISBN2";
-            ISBN2.Width = 57;
-            // 
-            // RokVydani2
-            // 
-            RokVydani2.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            RokVydani2.DataPropertyName = "RokVydani";
-            RokVydani2.HeaderText = "Rok vydání";
-            RokVydani2.Name = "RokVydani2";
-            RokVydani2.Width = 90;
-            // 
-            // StavKnihy2
-            // 
-            StavKnihy2.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            StavKnihy2.DataPropertyName = "StavKnihy";
-            StavKnihy2.HeaderText = "Stav knihy";
-            StavKnihy2.Name = "StavKnihy2";
-            StavKnihy2.Width = 86;
-            // 
-            // Jméno
-            // 
-            Jméno.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            Jméno.DataPropertyName = "Jmeno";
-            Jméno.HeaderText = "Jméno";
-            Jméno.Name = "Jméno";
-            Jméno.Width = 67;
-            // 
-            // Příjmení
-            // 
-            Příjmení.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            Příjmení.DataPropertyName = "Prijmeni";
-            Příjmení.HeaderText = "Příjmení";
-            Příjmení.Name = "Příjmení";
-            Příjmení.Width = 76;
-            // 
-            // Email
-            // 
-            Email.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            Email.DataPropertyName = "Email";
-            Email.HeaderText = "E-mail";
-            Email.Name = "Email";
-            Email.Width = 66;
-            // 
-            // TelefonniCislo
-            // 
-            TelefonniCislo.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            TelefonniCislo.DataPropertyName = "TelefonniCislo";
-            TelefonniCislo.HeaderText = "Telefonní číslo";
-            TelefonniCislo.Name = "TelefonniCislo";
-            TelefonniCislo.Width = 107;
+            btnVymazatHledaniKnih.Location = new Point(987, 15);
+            btnVymazatHledaniKnih.Name = "btnVymazatHledaniKnih";
+            btnVymazatHledaniKnih.Size = new Size(75, 23);
+            btnVymazatHledaniKnih.TabIndex = 20;
+            btnVymazatHledaniKnih.Text = "Vymazat";
+            btnVymazatHledaniKnih.UseVisualStyleBackColor = true;
+            btnVymazatHledaniKnih.Click += btnVymazatHledaniKnih_Click;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1088, 607);
+            Controls.Add(btnVymazatHledaniKnih);
+            Controls.Add(txtHledatKnihu);
+            Controls.Add(lblHledatKnihu);
             Controls.Add(lblRezervovaneKnihy);
             Controls.Add(btnSmazatCtenare);
             Controls.Add(btnSmazatKnihu);
@@ -514,5 +547,8 @@
         private DataGridViewTextBoxColumn ISBN2;
         private DataGridViewTextBoxColumn RokVydani2;
         private DataGridViewTextBoxColumn StavKnihy2;
+        private Label lblHledatKnihu;
+        private TextBox txtHledatKnihu;
+        private Button btnVymazatHledaniKnih;
     }
 }

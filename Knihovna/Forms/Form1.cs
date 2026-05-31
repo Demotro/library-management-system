@@ -1,4 +1,6 @@
 using System;
+using System.ComponentModel;
+using System.Linq;
 
 namespace Knihovna
 {
@@ -24,7 +26,8 @@ namespace Knihovna
             dgvVypujcene.DataSource = null;
 
             dgvCtenari.DataSource = Databaze.Ctenari;
-            dgvKnihy.DataSource = Databaze.Knihy;
+
+            ApplyBookSearchFilter();
 
             if (selectedCtenarId.HasValue)
             {
@@ -38,6 +41,27 @@ namespace Knihovna
 
             RefreshSelectedReaderBooks();
             SetButtons();
+        }
+
+        //aplikuje vyhledavani knih podle nazvu, autora nebo ISBN
+        private void ApplyBookSearchFilter()
+        {
+            string searchText = txtHledatKnihu.Text.Trim().ToLower();
+
+            if (string.IsNullOrWhiteSpace(searchText))
+            {
+                dgvKnihy.DataSource = Databaze.Knihy;
+                return;
+            }
+
+            var filteredBooks = Databaze.Knihy
+                .Where(k =>
+                    k.Nazev.ToLower().Contains(searchText) ||
+                    k.Autor.ToLower().Contains(searchText) ||
+                    k.ISBN.ToLower().Contains(searchText))
+                .ToList();
+
+            dgvKnihy.DataSource = new BindingList<Kniha>(filteredBooks);
         }
 
         //vrati ID aktualne vybraneho ctenare
@@ -322,6 +346,27 @@ namespace Knihovna
             }
 
             SetButtons();
+        }
+
+        private void txtHledatKnihu_TextChanged(object sender, EventArgs e)
+        {
+            int? selectedCtenarId = GetSelectedCtenarId();
+
+            ApplyBookSearchFilter();
+
+            RefreshSelectedReaderBooks();
+            SetButtons();
+
+            if (selectedCtenarId.HasValue)
+            {
+                SelectCtenarById(selectedCtenarId.Value);
+            }
+        }
+
+        private void btnVymazatHledaniKnih_Click(object sender, EventArgs e)
+        {
+            txtHledatKnihu.Text = "";
+            ApplyBookSearchFilter();
         }
     }
 }
