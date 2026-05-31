@@ -30,6 +30,58 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void AddBook_WhenDataAreValid_ShouldSucceed()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+
+            Result result = _service.AddBook(kniha);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Kniha byla úspěšně přidána.", result.Message);
+            Assert.IsNotNull(_knihaRepository.GetById(kniha.Id));
+        }
+
+        [TestMethod]
+        public void AddBook_WhenIsbnAlreadyExists_ShouldFail()
+        {
+            var kniha1 = new DobraKniha("Book One", "Author One", "1234567890", 2020);
+            var kniha2 = new DobraKniha("Book Two", "Author Two", "1234567890", 2021);
+
+            _knihaRepository.Add(kniha1);
+
+            Result result = _service.AddBook(kniha2);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Kniha s tímto ISBN už existuje.", result.Message);
+        }
+
+        [TestMethod]
+        public void AddReader_WhenDataAreValid_ShouldSucceed()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+
+            Result result = _service.AddReader(ctenar);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Čtenář byl úspěšně přidán.", result.Message);
+            Assert.IsNotNull(_ctenarRepository.GetById(ctenar.Id));
+        }
+
+        [TestMethod]
+        public void AddReader_WhenEmailAlreadyExists_ShouldFail()
+        {
+            var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "jan@test.cz");
+
+            _ctenarRepository.Add(ctenar1);
+
+            Result result = _service.AddReader(ctenar2);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Čtenář s tímto e-mailem už existuje.", result.Message);
+        }
+
+        [TestMethod]
         public void BorrowBook_WhenBookIsAvailable_ShouldCreateLoan()
         {
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
