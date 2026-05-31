@@ -6,8 +6,7 @@ namespace Knihovna
     {
         public static void Initialize()
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             string createKnihyTable = @"
                 CREATE TABLE IF NOT EXISTS Knihy (
