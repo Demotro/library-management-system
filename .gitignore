@@ -18,7 +18,11 @@ Thumbs.db
 # Logs
 *.log
 
-# Local database files
+# Old XML data files
+knihy.xml
+ctenari.xml
+
+# SQLite local database
 *.db
 *.db-shm
 *.db-wal
