@@ -62,7 +62,7 @@ namespace Knihovna
                 SELECT Id, KnihaId, CtenarId, DatumRezervace, Stav
                 FROM Rezervace
                 WHERE KnihaId = @KnihaId AND Stav = 'Aktivni'
-                ORDER BY DatumRezervace ASC;
+                ORDER BY DatumRezervace ASC, Id ASC;
             ";
 
             command.Parameters.AddWithValue("@KnihaId", knihaId);
@@ -111,7 +111,7 @@ namespace Knihovna
                 SELECT Id, KnihaId, CtenarId, DatumRezervace, Stav
                 FROM Rezervace
                 WHERE KnihaId = @KnihaId AND Stav = 'Aktivni'
-                ORDER BY DatumRezervace ASC
+                ORDER BY DatumRezervace ASC, Id ASC
                 LIMIT 1;
             ";
 

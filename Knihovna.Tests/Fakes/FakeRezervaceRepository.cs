@@ -23,6 +23,7 @@ namespace Knihovna.Tests.Fakes
             return _rezervace
                 .Where(r => r.KnihaId == knihaId && r.Stav == "Aktivni")
                 .OrderBy(r => r.DatumRezervace)
+                .ThenBy(r => r.Id)
                 .ToList();
         }
 
@@ -38,6 +39,7 @@ namespace Knihovna.Tests.Fakes
             return _rezervace
                 .Where(r => r.KnihaId == knihaId && r.Stav == "Aktivni")
                 .OrderBy(r => r.DatumRezervace)
+                .ThenBy(r => r.Id)
                 .FirstOrDefault();
         }
 
