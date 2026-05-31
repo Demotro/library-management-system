@@ -196,6 +196,50 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void UpdateBook_WhenBookHasActiveLoan_ShouldFail()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar);
+
+            _service.BorrowBook(kniha.Id, ctenar.Id);
+
+            var upravenaKniha = new DobraKniha("Updated Book", "Updated Author", "1234567890", 2021);
+            upravenaKniha.Id = kniha.Id;
+
+            Result result = _service.UpdateBook(upravenaKniha);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Knihu nelze upravit, protože je aktuálně vypůjčená.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateBook_WhenBookHasActiveReservation_ShouldFail()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+            var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "petr@test.cz");
+
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar1);
+            _ctenarRepository.Add(ctenar2);
+
+            _service.BorrowBook(kniha.Id, ctenar1.Id);
+            _service.ReserveBook(kniha.Id, ctenar2.Id);
+            _service.ReturnBook(kniha.Id);
+
+            var upravenaKniha = new DobraKniha("Updated Book", "Updated Author", "1234567890", 2021);
+            upravenaKniha.Id = kniha.Id;
+
+            Result result = _service.UpdateBook(upravenaKniha);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Knihu nelze upravit, protože má aktivní rezervace.", result.Message);
+        }
+
+        [TestMethod]
         public void BorrowBook_WhenBookReservedForAnotherReader_ShouldFail()
         {
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
