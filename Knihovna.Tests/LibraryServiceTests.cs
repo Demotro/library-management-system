@@ -56,6 +56,28 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void AddBook_WhenPublicationYearIsTooLow_ShouldFail()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 1449);
+
+            Result result = _service.AddBook(kniha);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Rok vydání musí být mezi 1450 a aktuálním rokem.", result.Message);
+        }
+
+        [TestMethod]
+        public void AddBook_WhenPublicationYearIsInFuture_ShouldFail()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", DateTime.Now.Year + 1);
+
+            Result result = _service.AddBook(kniha);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Rok vydání musí být mezi 1450 a aktuálním rokem.", result.Message);
+        }
+
+        [TestMethod]
         public void AddBook_WhenIsbnAlreadyExists_ShouldFail()
         {
             var kniha1 = new DobraKniha("Book One", "Author One", "1234567890", 2020);
@@ -147,6 +169,36 @@ namespace Knihovna.Tests
             Assert.AreEqual("Kniha byla úspěšně upravena.", result.Message);
             Assert.AreEqual("Updated Book", upravenaKniha.Nazev);
             Assert.AreEqual("Updated Author", upravenaKniha.Autor);
+        }
+
+        [TestMethod]
+        public void UpdateBook_WhenPublicationYearIsTooLow_ShouldFail()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+            _knihaRepository.Add(kniha);
+
+            var upravenaKniha = new DobraKniha("Updated Book", "Updated Author", "1234567890", 1449);
+            upravenaKniha.Id = kniha.Id;
+
+            Result result = _service.UpdateBook(upravenaKniha);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Rok vydání musí být mezi 1450 a aktuálním rokem.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateBook_WhenPublicationYearIsInFuture_ShouldFail()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+            _knihaRepository.Add(kniha);
+
+            var upravenaKniha = new DobraKniha("Updated Book", "Updated Author", "1234567890", DateTime.Now.Year + 1);
+            upravenaKniha.Id = kniha.Id;
+
+            Result result = _service.UpdateBook(upravenaKniha);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Rok vydání musí být mezi 1450 a aktuálním rokem.", result.Message);
         }
 
         [TestMethod]
