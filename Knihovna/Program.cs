@@ -10,9 +10,6 @@ namespace Knihovna
         {
             ApplicationConfiguration.Initialize();
 
-            //vytvori databazi a tabulky, pokud jeste neexistuji
-            DatabaseInitializer.Initialize();
-
             Application.Run(new Form1());
         }
     }
