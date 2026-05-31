@@ -171,6 +171,8 @@ namespace Knihovna
                 return Result.Fail("Telefonní číslo je povinné.");
             }
 
+            ctenar.TelefonniCislo = NormalizePhoneNumber(ctenar.TelefonniCislo);
+
             if (!IsValidPhoneNumber(ctenar.TelefonniCislo))
             {
                 return Result.Fail("Telefonní číslo musí mít 9 číslic.");
@@ -221,6 +223,8 @@ namespace Knihovna
             {
                 return Result.Fail("Telefonní číslo je povinné.");
             }
+
+            ctenar.TelefonniCislo = NormalizePhoneNumber(ctenar.TelefonniCislo);
 
             if (!IsValidPhoneNumber(ctenar.TelefonniCislo))
             {
@@ -429,6 +433,11 @@ namespace Knihovna
         private bool IsValidPhoneNumber(string phoneNumber)
         {
             return phoneNumber.All(char.IsDigit) && phoneNumber.Length == 9;
+        }
+
+        private string NormalizePhoneNumber(string phoneNumber)
+        {
+            return phoneNumber.Replace(" ", "").Replace("-", "");
         }
     }
 }
