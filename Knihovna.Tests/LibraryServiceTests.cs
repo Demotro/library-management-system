@@ -43,6 +43,19 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void AddBook_WhenTitleAndAuthorContainSpaces_ShouldTrimValues()
+        {
+            var kniha = new DobraKniha("  Test Book  ", "  Test Author  ", "1234567890", 2020);
+
+            Result result = _service.AddBook(kniha);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Kniha byla úspěšně přidána.", result.Message);
+            Assert.AreEqual("Test Book", kniha.Nazev);
+            Assert.AreEqual("Test Author", kniha.Autor);
+        }
+
+        [TestMethod]
         public void AddBook_WhenIsbnAlreadyExists_ShouldFail()
         {
             var kniha1 = new DobraKniha("Book One", "Author One", "1234567890", 2020);
@@ -120,6 +133,23 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void UpdateBook_WhenTitleAndAuthorContainSpaces_ShouldTrimValues()
+        {
+            var kniha = new DobraKniha("Old Book", "Old Author", "1234567890", 2020);
+            _knihaRepository.Add(kniha);
+
+            var upravenaKniha = new DobraKniha("  Updated Book  ", "  Updated Author  ", "1234567890", 2021);
+            upravenaKniha.Id = kniha.Id;
+
+            Result result = _service.UpdateBook(upravenaKniha);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Kniha byla úspěšně upravena.", result.Message);
+            Assert.AreEqual("Updated Book", upravenaKniha.Nazev);
+            Assert.AreEqual("Updated Author", upravenaKniha.Autor);
+        }
+
+        [TestMethod]
         public void AddReader_WhenDataAreValid_ShouldSucceed()
         {
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
@@ -129,6 +159,19 @@ namespace Knihovna.Tests
             Assert.IsTrue(result.Success);
             Assert.AreEqual("Čtenář byl úspěšně přidán.", result.Message);
             Assert.IsNotNull(_ctenarRepository.GetById(ctenar.Id));
+        }
+
+        [TestMethod]
+        public void AddReader_WhenNameAndSurnameContainSpaces_ShouldTrimValues()
+        {
+            var ctenar = new Ctenar("  Jan  ", "  Novak  ", "123456789", "jan@test.cz");
+
+            Result result = _service.AddReader(ctenar);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Čtenář byl úspěšně přidán.", result.Message);
+            Assert.AreEqual("Jan", ctenar.Jmeno);
+            Assert.AreEqual("Novak", ctenar.Prijmeni);
         }
 
         [TestMethod]
@@ -214,6 +257,23 @@ namespace Knihovna.Tests
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Čtenář nebyl nalezen.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateReader_WhenNameAndSurnameContainSpaces_ShouldTrimValues()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            var upravenyCtenar = new Ctenar("  Petr  ", "  Svoboda  ", "123456789", "jan@test.cz");
+            upravenyCtenar.Id = ctenar.Id;
+
+            Result result = _service.UpdateReader(upravenyCtenar);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Čtenář byl úspěšně upraven.", result.Message);
+            Assert.AreEqual("Petr", upravenyCtenar.Jmeno);
+            Assert.AreEqual("Svoboda", upravenyCtenar.Prijmeni);
         }
 
         [TestMethod]
