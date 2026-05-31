@@ -272,6 +272,23 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void UpdateBook_WhenTitleHasMaximumLength_ShouldSucceed()
+        {
+            var kniha = new DobraKniha("Old Book", "Old Author", "1234567890", 2020);
+            _knihaRepository.Add(kniha);
+
+            string title = new string('A', 100);
+            var upravenaKniha = new DobraKniha(title, "Updated Author", "1234567890", 2021);
+            upravenaKniha.Id = kniha.Id;
+
+            Result result = _service.UpdateBook(upravenaKniha);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Kniha byla úspěšně upravena.", result.Message);
+            Assert.AreEqual(100, upravenaKniha.Nazev.Length);
+        }
+
+        [TestMethod]
         public void UpdateBook_WhenAuthorIsTooLong_ShouldFail()
         {
             var kniha = new DobraKniha("Old Book", "Old Author", "1234567890", 2020);
@@ -285,6 +302,23 @@ namespace Knihovna.Tests
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Autor knihy může mít maximálně 100 znaků.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateBook_WhenAuthorHasMaximumLength_ShouldSucceed()
+        {
+            var kniha = new DobraKniha("Old Book", "Old Author", "1234567890", 2020);
+            _knihaRepository.Add(kniha);
+
+            string author = new string('A', 100);
+            var upravenaKniha = new DobraKniha("Updated Book", author, "1234567890", 2021);
+            upravenaKniha.Id = kniha.Id;
+
+            Result result = _service.UpdateBook(upravenaKniha);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Kniha byla úspěšně upravena.", result.Message);
+            Assert.AreEqual(100, upravenaKniha.Autor.Length);
         }
 
         [TestMethod]
@@ -556,6 +590,23 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void UpdateReader_WhenNameHasMaximumLength_ShouldSucceed()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            string name = new string('A', 50);
+            var upravenyCtenar = new Ctenar(name, "Novak", "123456789", "jan@test.cz");
+            upravenyCtenar.Id = ctenar.Id;
+
+            Result result = _service.UpdateReader(upravenyCtenar);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Čtenář byl úspěšně upraven.", result.Message);
+            Assert.AreEqual(50, upravenyCtenar.Jmeno.Length);
+        }
+
+        [TestMethod]
         public void UpdateReader_WhenSurnameIsTooLong_ShouldFail()
         {
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
@@ -569,6 +620,23 @@ namespace Knihovna.Tests
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Příjmení čtenáře může mít maximálně 50 znaků.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateReader_WhenSurnameHasMaximumLength_ShouldSucceed()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            string surname = new string('A', 50);
+            var upravenyCtenar = new Ctenar("Jan", surname, "123456789", "jan@test.cz");
+            upravenyCtenar.Id = ctenar.Id;
+
+            Result result = _service.UpdateReader(upravenyCtenar);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Čtenář byl úspěšně upraven.", result.Message);
+            Assert.AreEqual(50, upravenyCtenar.Prijmeni.Length);
         }
 
         [TestMethod]
