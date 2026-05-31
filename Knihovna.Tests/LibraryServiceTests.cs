@@ -7,74 +7,58 @@ namespace Knihovna.Tests
     [TestClass]
     public class LibraryServiceTests
     {
-        private LibraryService CreateService(
-            FakeKnihaRepository knihaRepository,
-            FakeCtenarRepository ctenarRepository,
-            FakeVypujckaRepository vypujckaRepository,
-            FakeRezervaceRepository rezervaceRepository)
+        private FakeKnihaRepository _knihaRepository = null!;
+        private FakeCtenarRepository _ctenarRepository = null!;
+        private FakeVypujckaRepository _vypujckaRepository = null!;
+        private FakeRezervaceRepository _rezervaceRepository = null!;
+        private LibraryService _service = null!;
+
+        [TestInitialize]
+        public void Setup()
         {
-            return new LibraryService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
+            _knihaRepository = new FakeKnihaRepository();
+            _ctenarRepository = new FakeCtenarRepository();
+            _vypujckaRepository = new FakeVypujckaRepository();
+            _rezervaceRepository = new FakeRezervaceRepository();
+
+            _service = new LibraryService(
+                _knihaRepository,
+                _ctenarRepository,
+                _vypujckaRepository,
+                _rezervaceRepository
             );
         }
 
         [TestMethod]
         public void BorrowBook_WhenBookIsAvailable_ShouldCreateLoan()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
 
-            knihaRepository.Add(kniha);
-            ctenarRepository.Add(ctenar);
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar);
 
-            Result result = service.BorrowBook(kniha.Id, ctenar.Id);
+            Result result = _service.BorrowBook(kniha.Id, ctenar.Id);
 
             Assert.IsTrue(result.Success);
-            Assert.IsTrue(vypujckaRepository.HasActiveLoanForBook(kniha.Id));
-            Assert.IsTrue(vypujckaRepository.HasActiveLoanForReader(ctenar.Id));
+            Assert.IsTrue(_vypujckaRepository.HasActiveLoanForBook(kniha.Id));
+            Assert.IsTrue(_vypujckaRepository.HasActiveLoanForReader(ctenar.Id));
         }
 
         [TestMethod]
         public void BorrowBook_WhenBookIsAlreadyBorrowed_ShouldFail()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
             var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
             var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "petr@test.cz");
 
-            knihaRepository.Add(kniha);
-            ctenarRepository.Add(ctenar1);
-            ctenarRepository.Add(ctenar2);
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar1);
+            _ctenarRepository.Add(ctenar2);
 
-            service.BorrowBook(kniha.Id, ctenar1.Id);
+            _service.BorrowBook(kniha.Id, ctenar1.Id);
 
-            Result result = service.BorrowBook(kniha.Id, ctenar2.Id);
+            Result result = _service.BorrowBook(kniha.Id, ctenar2.Id);
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Kniha je už vypůjčená.", result.Message);
@@ -83,55 +67,31 @@ namespace Knihovna.Tests
         [TestMethod]
         public void ReturnBook_WhenBookIsBorrowed_ShouldMarkLoanAsReturned()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
 
-            knihaRepository.Add(kniha);
-            ctenarRepository.Add(ctenar);
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar);
 
-            service.BorrowBook(kniha.Id, ctenar.Id);
+            _service.BorrowBook(kniha.Id, ctenar.Id);
 
-            Result result = service.ReturnBook(kniha.Id);
+            Result result = _service.ReturnBook(kniha.Id);
 
             Assert.IsTrue(result.Success);
-            Assert.IsFalse(vypujckaRepository.HasActiveLoanForBook(kniha.Id));
-            Assert.IsFalse(vypujckaRepository.HasActiveLoanForReader(ctenar.Id));
+            Assert.IsFalse(_vypujckaRepository.HasActiveLoanForBook(kniha.Id));
+            Assert.IsFalse(_vypujckaRepository.HasActiveLoanForReader(ctenar.Id));
         }
 
         [TestMethod]
         public void ReserveBook_WhenBookIsAvailable_ShouldFail()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
 
-            knihaRepository.Add(kniha);
-            ctenarRepository.Add(ctenar);
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar);
 
-            Result result = service.ReserveBook(kniha.Id, ctenar.Id);
+            Result result = _service.ReserveBook(kniha.Id, ctenar.Id);
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Dostupnou knihu nelze rezervovat, protože ji lze rovnou půjčit.", result.Message);
@@ -140,61 +100,37 @@ namespace Knihovna.Tests
         [TestMethod]
         public void ReserveBook_WhenBookIsBorrowed_ShouldCreateReservation()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
             var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
             var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "petr@test.cz");
 
-            knihaRepository.Add(kniha);
-            ctenarRepository.Add(ctenar1);
-            ctenarRepository.Add(ctenar2);
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar1);
+            _ctenarRepository.Add(ctenar2);
 
-            service.BorrowBook(kniha.Id, ctenar1.Id);
+            _service.BorrowBook(kniha.Id, ctenar1.Id);
 
-            Result result = service.ReserveBook(kniha.Id, ctenar2.Id);
+            Result result = _service.ReserveBook(kniha.Id, ctenar2.Id);
 
             Assert.IsTrue(result.Success);
-            Assert.IsTrue(rezervaceRepository.ExistsActiveReservation(kniha.Id, ctenar2.Id));
+            Assert.IsTrue(_rezervaceRepository.ExistsActiveReservation(kniha.Id, ctenar2.Id));
         }
 
         [TestMethod]
         public void ReserveBook_WhenReaderAlreadyReservedSameBook_ShouldFail()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
             var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
             var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "petr@test.cz");
 
-            knihaRepository.Add(kniha);
-            ctenarRepository.Add(ctenar1);
-            ctenarRepository.Add(ctenar2);
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar1);
+            _ctenarRepository.Add(ctenar2);
 
-            service.BorrowBook(kniha.Id, ctenar1.Id);
-            service.ReserveBook(kniha.Id, ctenar2.Id);
+            _service.BorrowBook(kniha.Id, ctenar1.Id);
+            _service.ReserveBook(kniha.Id, ctenar2.Id);
 
-            Result result = service.ReserveBook(kniha.Id, ctenar2.Id);
+            Result result = _service.ReserveBook(kniha.Id, ctenar2.Id);
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Čtenář už má tuto knihu rezervovanou.", result.Message);
@@ -203,27 +139,15 @@ namespace Knihovna.Tests
         [TestMethod]
         public void ReserveBook_WhenReaderBorrowedSameBook_ShouldFail()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
 
-            knihaRepository.Add(kniha);
-            ctenarRepository.Add(ctenar);
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar);
 
-            service.BorrowBook(kniha.Id, ctenar.Id);
+            _service.BorrowBook(kniha.Id, ctenar.Id);
 
-            Result result = service.ReserveBook(kniha.Id, ctenar.Id);
+            Result result = _service.ReserveBook(kniha.Id, ctenar.Id);
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Čtenář nemůže rezervovat knihu, kterou má právě vypůjčenou.", result.Message);
@@ -232,27 +156,15 @@ namespace Knihovna.Tests
         [TestMethod]
         public void DeleteBook_WhenBookHasActiveLoan_ShouldFail()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
 
-            knihaRepository.Add(kniha);
-            ctenarRepository.Add(ctenar);
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar);
 
-            service.BorrowBook(kniha.Id, ctenar.Id);
+            _service.BorrowBook(kniha.Id, ctenar.Id);
 
-            Result result = service.DeleteBook(kniha.Id);
+            Result result = _service.DeleteBook(kniha.Id);
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Knihu nelze smazat, protože je aktuálně vypůjčená.", result.Message);
@@ -261,31 +173,19 @@ namespace Knihovna.Tests
         [TestMethod]
         public void DeleteBook_WhenBookHasActiveReservation_ShouldFail()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
             var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
             var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "petr@test.cz");
 
-            knihaRepository.Add(kniha);
-            ctenarRepository.Add(ctenar1);
-            ctenarRepository.Add(ctenar2);
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar1);
+            _ctenarRepository.Add(ctenar2);
 
-            service.BorrowBook(kniha.Id, ctenar1.Id);
-            service.ReserveBook(kniha.Id, ctenar2.Id);
-            service.ReturnBook(kniha.Id);
+            _service.BorrowBook(kniha.Id, ctenar1.Id);
+            _service.ReserveBook(kniha.Id, ctenar2.Id);
+            _service.ReturnBook(kniha.Id);
 
-            Result result = service.DeleteBook(kniha.Id);
+            Result result = _service.DeleteBook(kniha.Id);
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Knihu nelze smazat, protože má aktivní rezervace.", result.Message);
@@ -294,98 +194,62 @@ namespace Knihovna.Tests
         [TestMethod]
         public void DeleteBook_WhenBookHasOnlyReturnedLoans_ShouldSucceed()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
 
-            knihaRepository.Add(kniha);
-            ctenarRepository.Add(ctenar);
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar);
 
-            service.BorrowBook(kniha.Id, ctenar.Id);
-            service.ReturnBook(kniha.Id);
+            _service.BorrowBook(kniha.Id, ctenar.Id);
+            _service.ReturnBook(kniha.Id);
 
-            Result result = service.DeleteBook(kniha.Id);
+            Result result = _service.DeleteBook(kniha.Id);
 
             Assert.IsTrue(result.Success);
             Assert.AreEqual("Kniha byla úspěšně smazána.", result.Message);
-            Assert.IsNull(knihaRepository.GetById(kniha.Id));
-            Assert.IsFalse(vypujckaRepository.GetAll().Any(v => v.KnihaId == kniha.Id));
+            Assert.IsNull(_knihaRepository.GetById(kniha.Id));
+            Assert.IsFalse(_vypujckaRepository.GetAll().Any(v => v.KnihaId == kniha.Id));
         }
 
         [TestMethod]
         public void DeleteBook_WhenBookHasOnlyCancelledReservations_ShouldSucceed()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
             var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
             var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "petr@test.cz");
 
-            knihaRepository.Add(kniha);
-            ctenarRepository.Add(ctenar1);
-            ctenarRepository.Add(ctenar2);
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar1);
+            _ctenarRepository.Add(ctenar2);
 
-            service.BorrowBook(kniha.Id, ctenar1.Id);
-            service.ReserveBook(kniha.Id, ctenar2.Id);
+            _service.BorrowBook(kniha.Id, ctenar1.Id);
+            _service.ReserveBook(kniha.Id, ctenar2.Id);
 
-            var rezervace = rezervaceRepository.GetAll().First();
-            rezervaceRepository.Cancel(rezervace.Id);
+            var rezervace = _rezervaceRepository.GetAll().First();
+            _rezervaceRepository.Cancel(rezervace.Id);
 
-            service.ReturnBook(kniha.Id);
+            _service.ReturnBook(kniha.Id);
 
-            Result result = service.DeleteBook(kniha.Id);
+            Result result = _service.DeleteBook(kniha.Id);
 
             Assert.IsTrue(result.Success);
             Assert.AreEqual("Kniha byla úspěšně smazána.", result.Message);
-            Assert.IsNull(knihaRepository.GetById(kniha.Id));
-            Assert.IsFalse(rezervaceRepository.GetAll().Any(r => r.KnihaId == kniha.Id));
+            Assert.IsNull(_knihaRepository.GetById(kniha.Id));
+            Assert.IsFalse(_rezervaceRepository.GetAll().Any(r => r.KnihaId == kniha.Id));
         }
 
         [TestMethod]
         public void DeleteReader_WhenReaderHasActiveLoan_ShouldFail()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
 
-            knihaRepository.Add(kniha);
-            ctenarRepository.Add(ctenar);
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar);
 
-            service.BorrowBook(kniha.Id, ctenar.Id);
+            _service.BorrowBook(kniha.Id, ctenar.Id);
 
-            Result result = service.DeleteReader(ctenar.Id);
+            Result result = _service.DeleteReader(ctenar.Id);
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Čtenáře nelze smazat, protože má aktivní výpůjčku.", result.Message);
@@ -394,30 +258,18 @@ namespace Knihovna.Tests
         [TestMethod]
         public void DeleteReader_WhenReaderHasActiveReservation_ShouldFail()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
             var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
             var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "petr@test.cz");
 
-            knihaRepository.Add(kniha);
-            ctenarRepository.Add(ctenar1);
-            ctenarRepository.Add(ctenar2);
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar1);
+            _ctenarRepository.Add(ctenar2);
 
-            service.BorrowBook(kniha.Id, ctenar1.Id);
-            service.ReserveBook(kniha.Id, ctenar2.Id);
+            _service.BorrowBook(kniha.Id, ctenar1.Id);
+            _service.ReserveBook(kniha.Id, ctenar2.Id);
 
-            Result result = service.DeleteReader(ctenar2.Id);
+            Result result = _service.DeleteReader(ctenar2.Id);
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Čtenáře nelze smazat, protože má aktivní rezervaci.", result.Message);
@@ -426,97 +278,61 @@ namespace Knihovna.Tests
         [TestMethod]
         public void DeleteReader_WhenReaderHasOnlyReturnedLoans_ShouldSucceed()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
 
-            knihaRepository.Add(kniha);
-            ctenarRepository.Add(ctenar);
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar);
 
-            service.BorrowBook(kniha.Id, ctenar.Id);
-            service.ReturnBook(kniha.Id);
+            _service.BorrowBook(kniha.Id, ctenar.Id);
+            _service.ReturnBook(kniha.Id);
 
-            Result result = service.DeleteReader(ctenar.Id);
+            Result result = _service.DeleteReader(ctenar.Id);
 
             Assert.IsTrue(result.Success);
             Assert.AreEqual("Čtenář byl úspěšně smazán.", result.Message);
-            Assert.IsNull(ctenarRepository.GetById(ctenar.Id));
-            Assert.IsFalse(vypujckaRepository.GetLoansByReaderId(ctenar.Id).Any());
+            Assert.IsNull(_ctenarRepository.GetById(ctenar.Id));
+            Assert.IsFalse(_vypujckaRepository.GetLoansByReaderId(ctenar.Id).Any());
         }
 
         [TestMethod]
         public void DeleteReader_WhenReaderHasOnlyCancelledReservations_ShouldSucceed()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
             var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
             var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "petr@test.cz");
 
-            knihaRepository.Add(kniha);
-            ctenarRepository.Add(ctenar1);
-            ctenarRepository.Add(ctenar2);
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar1);
+            _ctenarRepository.Add(ctenar2);
 
-            service.BorrowBook(kniha.Id, ctenar1.Id);
-            service.ReserveBook(kniha.Id, ctenar2.Id);
+            _service.BorrowBook(kniha.Id, ctenar1.Id);
+            _service.ReserveBook(kniha.Id, ctenar2.Id);
 
-            var rezervace = rezervaceRepository.GetAll().First();
-            rezervaceRepository.Cancel(rezervace.Id);
+            var rezervace = _rezervaceRepository.GetAll().First();
+            _rezervaceRepository.Cancel(rezervace.Id);
 
-            Result result = service.DeleteReader(ctenar2.Id);
+            Result result = _service.DeleteReader(ctenar2.Id);
 
             Assert.IsTrue(result.Success);
             Assert.AreEqual("Čtenář byl úspěšně smazán.", result.Message);
-            Assert.IsNull(ctenarRepository.GetById(ctenar2.Id));
-            Assert.IsFalse(rezervaceRepository.GetAll().Any(r => r.CtenarId == ctenar2.Id));
+            Assert.IsNull(_ctenarRepository.GetById(ctenar2.Id));
+            Assert.IsFalse(_rezervaceRepository.GetAll().Any(r => r.CtenarId == ctenar2.Id));
         }
 
         [TestMethod]
         public void UpdateBook_WhenIsbnBelongsToAnotherBook_ShouldFail()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha1 = new DobraKniha("Book One", "Author One", "1234567890", 2020);
             var kniha2 = new DobraKniha("Book Two", "Author Two", "0987654321", 2021);
 
-            knihaRepository.Add(kniha1);
-            knihaRepository.Add(kniha2);
+            _knihaRepository.Add(kniha1);
+            _knihaRepository.Add(kniha2);
 
             var upravenaKniha = new DobraKniha("Book Two Updated", "Author Two", "1234567890", 2021);
             upravenaKniha.Id = kniha2.Id;
 
-            Result result = service.UpdateBook(upravenaKniha);
+            Result result = _service.UpdateBook(upravenaKniha);
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Jiná kniha s tímto ISBN už existuje.", result.Message);
@@ -525,25 +341,13 @@ namespace Knihovna.Tests
         [TestMethod]
         public void UpdateBook_WhenIsbnBelongsToSameBook_ShouldSucceed()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var kniha = new DobraKniha("Book One", "Author One", "1234567890", 2020);
-            knihaRepository.Add(kniha);
+            _knihaRepository.Add(kniha);
 
             var upravenaKniha = new DobraKniha("Book One Updated", "Author One Updated", "1234567890", 2022);
             upravenaKniha.Id = kniha.Id;
 
-            Result result = service.UpdateBook(upravenaKniha);
+            Result result = _service.UpdateBook(upravenaKniha);
 
             Assert.IsTrue(result.Success);
             Assert.AreEqual("Kniha byla úspěšně upravena.", result.Message);
@@ -552,28 +356,16 @@ namespace Knihovna.Tests
         [TestMethod]
         public void UpdateReader_WhenEmailBelongsToAnotherReader_ShouldFail()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
             var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "petr@test.cz");
 
-            ctenarRepository.Add(ctenar1);
-            ctenarRepository.Add(ctenar2);
+            _ctenarRepository.Add(ctenar1);
+            _ctenarRepository.Add(ctenar2);
 
             var upravenyCtenar = new Ctenar("Petr", "Svoboda", "987654321", "jan@test.cz");
             upravenyCtenar.Id = ctenar2.Id;
 
-            Result result = service.UpdateReader(upravenyCtenar);
+            Result result = _service.UpdateReader(upravenyCtenar);
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Jiný čtenář s tímto e-mailem už existuje.", result.Message);
@@ -582,25 +374,13 @@ namespace Knihovna.Tests
         [TestMethod]
         public void UpdateReader_WhenEmailBelongsToSameReader_ShouldSucceed()
         {
-            var knihaRepository = new FakeKnihaRepository();
-            var ctenarRepository = new FakeCtenarRepository();
-            var vypujckaRepository = new FakeVypujckaRepository();
-            var rezervaceRepository = new FakeRezervaceRepository();
-
-            var service = CreateService(
-                knihaRepository,
-                ctenarRepository,
-                vypujckaRepository,
-                rezervaceRepository
-            );
-
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
-            ctenarRepository.Add(ctenar);
+            _ctenarRepository.Add(ctenar);
 
             var upravenyCtenar = new Ctenar("Jan", "Novotny", "123456789", "jan@test.cz");
             upravenyCtenar.Id = ctenar.Id;
 
-            Result result = service.UpdateReader(upravenyCtenar);
+            Result result = _service.UpdateReader(upravenyCtenar);
 
             Assert.IsTrue(result.Success);
             Assert.AreEqual("Čtenář byl úspěšně upraven.", result.Message);
