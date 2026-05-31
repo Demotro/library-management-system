@@ -34,7 +34,7 @@ namespace Knihovna
             switch (Action)
             {
                 case ActionType.New:
-                    //kdyz chceme vytvorit novou instanci ctenare, tak text. pole jsou prazdna
+                    //kdyz chceme vytvorit novou instanci ctenare, tak textova pole jsou prazdna
                     txtJmeno.Text = "";
                     txtPrijmeni.Text = "";
                     txtEmail.Text = "";
@@ -42,7 +42,9 @@ namespace Knihovna
                     break;
 
                 case ActionType.Edit:
-                    //kdyz chceme editovat instanci ctenare, tak se zobrazi vyplnene text. pole
+                    if (Ctenar == null) return;
+
+                    //kdyz chceme editovat instanci ctenare, tak se zobrazi vyplnena textova pole
                     txtJmeno.Text = Ctenar.Jmeno;
                     txtPrijmeni.Text = Ctenar.Prijmeni;
                     txtEmail.Text = Ctenar.Email;
@@ -71,21 +73,24 @@ namespace Knihovna
                 return;
             }
 
-            switch (Action)
-            {
-                case ActionType.New:
-                    //vytvori novou instanci s vyplnenymi text. poli
-                    Ctenar = new Ctenar(txtJmeno.Text, txtPrijmeni.Text, telCislo, txtEmail.Text);
-                    break;
+            Ctenar novyCtenar = new Ctenar(
+                txtJmeno.Text.Trim(),
+                txtPrijmeni.Text.Trim(),
+                telCislo,
+                txtEmail.Text.Trim()
+            );
 
-                case ActionType.Edit:
-                    //aktualizuje instanci ctenare, kterou editujeme
-                    Ctenar.Jmeno = txtJmeno.Text;
-                    Ctenar.Prijmeni = txtPrijmeni.Text;
-                    Ctenar.Email = txtEmail.Text;
-                    Ctenar.TelefonniCislo = telCislo;
-                    break;
+            if (Action == ActionType.Edit && Ctenar != null)
+            {
+                //zachovani ID puvodniho ctenare
+                novyCtenar.Id = Ctenar.Id;
+
+                //zachovani aktualnich seznamu, ktere se v dialogu neupravuji
+                novyCtenar.Vypujcene = Ctenar.Vypujcene;
+                novyCtenar.Rezervovano = Ctenar.Rezervovano;
             }
+
+            Ctenar = novyCtenar;
 
             this.DialogResult = DialogResult.OK;
             this.Close();

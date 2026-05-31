@@ -33,16 +33,18 @@ namespace Knihovna
             switch (Action)
             {
                 case ActionType1.New:
-                    //kdyz chceme vytvorit novou instanci knihy, tak text. pole jsou prazdna
+                    //kdyz chceme vytvorit novou instanci knihy, tak textova pole jsou prazdna
                     txtNazev.Text = "";
                     txtAutor.Text = "";
                     txtISBN.Text = "";
-                    numRok.Value = 1500; //nastavi zakladni rok
+                    numRok.Value = 1500;
                     cbStavKnihy.Text = "";
                     break;
 
                 case ActionType1.Edit:
-                    //kdyz chceme editovat instanci knihy, tak se zobrazi vyplnene text. pole
+                    if (Kniha == null) return;
+
+                    //kdyz chceme editovat instanci knihy, tak se zobrazi vyplnena textova pole
                     txtNazev.Text = Kniha.Nazev;
                     txtAutor.Text = Kniha.Autor;
                     txtISBN.Text = Kniha.ISBN;
@@ -98,7 +100,7 @@ namespace Knihovna
             //kontrola, aby pri editaci knihy neslo zadat ISBN jine existujici knihy
             else if (Action == ActionType1.Edit)
             {
-                isbnExistuje = Databaze.Knihy.Any(k => k.ISBN == isbn && k != Kniha);
+                isbnExistuje = Databaze.Knihy.Any(k => k.ISBN == isbn && k.Id != Kniha.Id);
             }
 
             if (isbnExistuje)
@@ -107,47 +109,28 @@ namespace Knihovna
                 return;
             }
 
-            switch (Action)
+            Kniha novaKniha = stav switch
             {
-                case ActionType1.New:
-                    //vytvori novou instanci knihy podle stavu a vyplnenych textovych poli
-                    Kniha = stav switch
-                    {
-                        "Nový" => new NovaKniha(txtNazev.Text, txtAutor.Text, isbn, (int)numRok.Value),
-                        "Dobrý" => new DobraKniha(txtNazev.Text, txtAutor.Text, isbn, (int)numRok.Value),
-                        "Opotřebovaný" => new OpotrebovanaKniha(txtNazev.Text, txtAutor.Text, isbn, (int)numRok.Value),
-                        _ => null
-                    };
-                    break;
+                "Nový" => new NovaKniha(txtNazev.Text.Trim(), txtAutor.Text.Trim(), isbn, (int)numRok.Value),
+                "Dobrý" => new DobraKniha(txtNazev.Text.Trim(), txtAutor.Text.Trim(), isbn, (int)numRok.Value),
+                "Opotřebovaný" => new OpotrebovanaKniha(txtNazev.Text.Trim(), txtAutor.Text.Trim(), isbn, (int)numRok.Value),
+                _ => null
+            };
 
-                case ActionType1.Edit:
-                    //vytvori novou instanci knihy podle stavu a vyplnenych textovych poli
-                    Kniha newKniha = stav switch
-                    {
-                        "Nový" => new NovaKniha(txtNazev.Text, txtAutor.Text, isbn, (int)numRok.Value),
-                        "Dobrý" => new DobraKniha(txtNazev.Text, txtAutor.Text, isbn, (int)numRok.Value),
-                        "Opotřebovaný" => new OpotrebovanaKniha(txtNazev.Text, txtAutor.Text, isbn, (int)numRok.Value),
-                        _ => null
-                    };
-
-                    if (newKniha == null)
-                    {
-                        MessageBox.Show("Nepodařilo se vytvořit knihu.");
-                        return;
-                    }
-
-                    //zachovani puvodnich hodnot, ktere se nemeni v dialogu
-                    newKniha.Id = Kniha.Id;
-                    newKniha.Dostupnost = Kniha.Dostupnost;
-
-                    var index = Databaze.Knihy.IndexOf(Kniha); //najde index knihy
-                    if (index >= 0)
-                    {
-                        Databaze.Knihy[index] = newKniha; //nahradi starou instanci knihy novou
-                        Kniha = newKniha; //kniha ukazuje na novou instanci
-                    }
-                    break;
+            if (novaKniha == null)
+            {
+                MessageBox.Show("Nepodařilo se vytvořit knihu.");
+                return;
             }
+
+            if (Action == ActionType1.Edit && Kniha != null)
+            {
+                //zachovani hodnot, ktere se v dialogu nemeni
+                novaKniha.Id = Kniha.Id;
+                novaKniha.Dostupnost = Kniha.Dostupnost;
+            }
+
+            Kniha = novaKniha;
 
             this.DialogResult = DialogResult.OK;
             this.Close();

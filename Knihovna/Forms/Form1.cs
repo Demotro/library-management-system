@@ -1,3 +1,5 @@
+using System;
+
 namespace Knihovna
 {
     public partial class Form1 : Form
@@ -10,9 +12,45 @@ namespace Knihovna
             dgvKnihy.AutoGenerateColumns = false;
             dgvCtenari.AutoGenerateColumns = false;
 
-            //pripojuje datove zdroje pro zobrazeni ctenaru a knih
+            RefreshDataSources();
+        }
+
+        //obnovi datove zdroje po zmene v databazi
+        private void RefreshDataSources()
+        {
+            dgvCtenari.DataSource = null;
+            dgvKnihy.DataSource = null;
+            dgvRezervovane.DataSource = null;
+            dgvVypujcene.DataSource = null;
+
             dgvCtenari.DataSource = Databaze.Ctenari;
             dgvKnihy.DataSource = Databaze.Knihy;
+
+            RefreshSelectedReaderBooks();
+            SetButtons();
+        }
+
+        //obnovi vypujcene a rezervovane knihy vybraneho ctenare
+        private void RefreshSelectedReaderBooks()
+        {
+            if (dgvCtenari.CurrentRow == null)
+            {
+                dgvRezervovane.DataSource = null;
+                dgvVypujcene.DataSource = null;
+                return;
+            }
+
+            var vybranyCtenar = dgvCtenari.CurrentRow.DataBoundItem as Ctenar;
+
+            if (vybranyCtenar == null)
+            {
+                dgvRezervovane.DataSource = null;
+                dgvVypujcene.DataSource = null;
+                return;
+            }
+
+            dgvRezervovane.DataSource = vybranyCtenar.Rezervovano;
+            dgvVypujcene.DataSource = vybranyCtenar.Vypujcene;
         }
 
         //metoda pro nastaveni tlacitek podle dostupnosti v seznamech
@@ -24,61 +62,64 @@ namespace Knihovna
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Databaze.Serializuj(); //ulozi data, kdyz zavreme formular
+            Databaze.Serializuj(); //u SQLite verze uz nic neuklada, data se ukladaji prubezne
         }
 
         private void dgvCtenari_SelectionChanged(object sender, EventArgs e)
         {
-            if (dgvCtenari.CurrentRow == null) return;
-            //nastavuje datove zdroje pro rezervovane a vypujcene knihy
-            var vybranyCtenar = (Ctenar)dgvCtenari.CurrentRow.DataBoundItem;
-
-            dgvRezervovane.DataSource = vybranyCtenar.Rezervovano;
-            dgvVypujcene.DataSource = vybranyCtenar.Vypujcene;
-
+            RefreshSelectedReaderBooks();
             SetButtons();
         }
 
         private void btnVypujcit_Click(object sender, EventArgs e)
         {
             if (dgvCtenari.CurrentRow == null || dgvKnihy.CurrentRow == null) return;
-            //volani metody pro vypujceni knihy
-            Databaze.Vypujcit(dgvCtenari.CurrentRow.DataBoundItem,
-                dgvKnihy.CurrentRow.DataBoundItem);
-            //obnoveni datovych zdroju knih
-            dgvKnihy.DataSource = null;
-            dgvKnihy.DataSource = Databaze.Knihy;
+
+            bool success = Databaze.Vypujcit(
+                dgvCtenari.CurrentRow.DataBoundItem,
+                dgvKnihy.CurrentRow.DataBoundItem
+            );
+
+            if (success)
+            {
+                RefreshDataSources();
+            }
+
             SetButtons();
         }
 
         private void btnVratit_Click(object sender, EventArgs e)
         {
             if (dgvCtenari.CurrentRow == null || dgvVypujcene.CurrentRow == null) return;
-            //volani metody pro vraceni knihy
+
             Databaze.Vratit(
                 dgvCtenari.CurrentRow.DataBoundItem,
                 dgvVypujcene.CurrentRow.DataBoundItem
             );
-            //obnoveni datovych zdroju knih
-            dgvKnihy.DataSource = null;
-            dgvKnihy.DataSource = Databaze.Knihy;
+
+            RefreshDataSources();
             SetButtons();
         }
 
         private void btnRezervovat_Click(object sender, EventArgs e)
-        {   //volani metody pro rezervaci knihy
+        {
             if (dgvCtenari.CurrentRow == null || dgvKnihy.CurrentRow == null) return;
 
-            Databaze.Rezervovat(
+            bool success = Databaze.Rezervovat(
                 dgvCtenari.CurrentRow.DataBoundItem,
                 dgvKnihy.CurrentRow.DataBoundItem
             );
+
+            if (success)
+            {
+                RefreshDataSources();
+            }
 
             SetButtons();
         }
 
         private void btnZrusit_Click(object sender, EventArgs e)
-        {   //volani metody pro zruceni rezervace knihy
+        {
             if (dgvCtenari.CurrentRow == null || dgvRezervovane.CurrentRow == null) return;
 
             Databaze.Zrusit(
@@ -86,6 +127,7 @@ namespace Knihovna
                 dgvRezervovane.CurrentRow.DataBoundItem
             );
 
+            RefreshDataSources();
             SetButtons();
         }
 
@@ -95,11 +137,14 @@ namespace Knihovna
             using (var dlg = new CtenarDialog())
             {
                 dlg.Action = ActionType.New;
+
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    Databaze.Ctenari.Add(dlg.Ctenar);
+                    Databaze.PridatCtenare(dlg.Ctenar);
+                    RefreshDataSources();
                 }
             }
+
             SetButtons();
         }
 
@@ -108,12 +153,18 @@ namespace Knihovna
             if (dgvCtenari.CurrentRow == null) return;
 
             var vybranyCtenar = (Ctenar)dgvCtenari.CurrentRow.DataBoundItem;
+
             //zobrazeni dialogu pro editaci ctenare
             using (var dlg = new CtenarDialog())
             {
                 dlg.Action = ActionType.Edit;
                 dlg.Ctenar = vybranyCtenar;
-                dlg.ShowDialog();
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    Databaze.UpravitCtenare(dlg.Ctenar);
+                    RefreshDataSources();
+                }
             }
 
             SetButtons();
@@ -125,11 +176,14 @@ namespace Knihovna
             using (var dlg = new KnihaDialog())
             {
                 dlg.Action = ActionType1.New;
+
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    Databaze.Knihy.Add(dlg.Kniha);
+                    Databaze.PridatKnihu(dlg.Kniha);
+                    RefreshDataSources();
                 }
             }
+
             SetButtons();
         }
 
@@ -147,9 +201,15 @@ namespace Knihovna
                 {
                     dlg.Action = ActionType1.Edit;
                     dlg.Kniha = vybranaKniha;
-                    dlg.ShowDialog();
+
+                    if (dlg.ShowDialog() == DialogResult.OK)
+                    {
+                        Databaze.UpravitKnihu(dlg.Kniha);
+                        RefreshDataSources();
+                    }
                 }
             }
+
             SetButtons();
         }
 
@@ -161,7 +221,12 @@ namespace Knihovna
 
             if (Databaze.SmazatelnaKniha(vybranaKniha))
             {
-                Databaze.SmazatKnihu(vybranaKniha);
+                bool success = Databaze.SmazatKnihu(vybranaKniha);
+
+                if (success)
+                {
+                    RefreshDataSources();
+                }
             }
 
             SetButtons();
@@ -172,12 +237,14 @@ namespace Knihovna
             if (dgvCtenari.CurrentRow == null) return;
 
             var vybranyCtenar = (Ctenar)dgvCtenari.CurrentRow.DataBoundItem;
-            //volani metody pro smazani ctenare
-            Databaze.SmazatCtenare(vybranyCtenar);
-            //musime obnovit datove zdroje, jelikoz se muze stat, ze smazeme
-            //ctenare, ktery ma vypujcenou knihu
-            dgvKnihy.DataSource = null;
-            dgvKnihy.DataSource = Databaze.Knihy;
+
+            bool success = Databaze.SmazatCtenare(vybranyCtenar);
+
+            if (success)
+            {
+                RefreshDataSources();
+            }
+
             SetButtons();
         }
     }

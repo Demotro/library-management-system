@@ -1,185 +1,287 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel;
-using System.IO;
-using System.Xml.Serialization;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace Knihovna
 {
     public static class Databaze
-    {   //vytvoreni nove kolekce ctenari a knihy, pro pridabi a odebrani instanci ctenaru a knih
-        //aktualizuje datove zobrazeni v user interface
+    {
+        //datove zdroje pro zobrazeni ve formulari
         public static BindingList<Ctenar> Ctenari { get; private set; } = new BindingList<Ctenar>();
-        public static BindingList<Kniha> Knihy { get; private set; } = [];
-        static Databaze()//konstruktor, nacita data ze souboru
+        public static BindingList<Kniha> Knihy { get; private set; } = new BindingList<Kniha>();
+
+        private static readonly IKnihaRepository _knihaRepository = new KnihaRepository();
+        private static readonly ICtenarRepository _ctenarRepository = new CtenarRepository();
+        private static readonly IVypujckaRepository _vypujckaRepository = new VypujckaRepository();
+        private static readonly IRezervaceRepository _rezervaceRepository = new RezervaceRepository();
+        private static readonly LibraryService _libraryService = new LibraryService();
+
+        static Databaze()
         {
-            Deserializuj();
+            NacistData();
         }
-        public static bool Vypujcit(object cO, object kO)//metoda pro vypujceni knihy ctenari
+
+        //nacte data z SQLite databaze do BindingListu pro WinForms
+        public static void NacistData()
+        {
+            var knihy = _knihaRepository.GetAll();
+            var ctenari = _ctenarRepository.GetAll();
+
+            foreach (var kniha in knihy)
+            {
+                kniha.Dostupnost = true;
+            }
+
+            foreach (var vypujcka in _vypujckaRepository.GetActiveLoans())
+            {
+                var kniha = knihy.FirstOrDefault(k => k.Id == vypujcka.KnihaId);
+                var ctenar = ctenari.FirstOrDefault(c => c.Id == vypujcka.CtenarId);
+
+                if (kniha != null && ctenar != null)
+                {
+                    kniha.Dostupnost = false;
+                    ctenar.Vypujcene.Add(kniha);
+                }
+            }
+
+            foreach (var rezervace in _rezervaceRepository.GetAll().Where(r => r.Stav == "Aktivni"))
+            {
+                var kniha = knihy.FirstOrDefault(k => k.Id == rezervace.KnihaId);
+                var ctenar = ctenari.FirstOrDefault(c => c.Id == rezervace.CtenarId);
+
+                if (kniha != null && ctenar != null)
+                {
+                    ctenar.Rezervovano.Add(kniha);
+                }
+            }
+
+            Ctenari = new BindingList<Ctenar>(ctenari);
+            Knihy = new BindingList<Kniha>(knihy);
+        }
+
+        //obnovi data po zmene v databazi
+        public static void Obnovit()
+        {
+            NacistData();
+        }
+
+        public static bool PridatKnihu(Kniha kniha)
+        {
+            Result result = _libraryService.AddBook(kniha);
+            MessageBox.Show(result.Message);
+
+            if (result.Success)
+            {
+                Obnovit();
+            }
+
+            return result.Success;
+        }
+
+        public static bool UpravitKnihu(Kniha kniha)
+        {
+            Result result = _libraryService.UpdateBook(kniha);
+            MessageBox.Show(result.Message);
+
+            if (result.Success)
+            {
+                Obnovit();
+            }
+
+            return result.Success;
+        }
+
+        public static bool PridatCtenare(Ctenar ctenar)
+        {
+            Result result = _libraryService.AddReader(ctenar);
+            MessageBox.Show(result.Message);
+
+            if (result.Success)
+            {
+                Obnovit();
+            }
+
+            return result.Success;
+        }
+
+        public static bool UpravitCtenare(Ctenar ctenar)
+        {
+            Result result = _libraryService.UpdateReader(ctenar);
+            MessageBox.Show(result.Message);
+
+            if (result.Success)
+            {
+                Obnovit();
+            }
+
+            return result.Success;
+        }
+
+        public static bool Vypujcit(object cO, object kO)
         {
             var ctenar = (Ctenar)cO;
             var kniha = (Kniha)kO;
 
-            if (kniha.Dostupnost == false)
+            Result result = _libraryService.BorrowBook(kniha.Id, ctenar.Id);
+            MessageBox.Show(result.Message);
+
+            if (result.Success)
             {
-                MessageBox.Show("Kniha je vypůjčená, nemůžeš si ji vypůjčit.");
+                Obnovit();
+            }
+
+            return result.Success;
+        }
+
+        public static void Vratit(object cO, object kO)
+        {
+            var kniha = (Kniha)kO;
+
+            Result result = _libraryService.ReturnBook(kniha.Id);
+            MessageBox.Show(result.Message);
+
+            if (result.Success)
+            {
+                Obnovit();
+            }
+        }
+
+        public static bool Rezervovat(object cO, object kO)
+        {
+            var ctenar = (Ctenar)cO;
+            var kniha = (Kniha)kO;
+
+            Result result = _libraryService.ReserveBook(kniha.Id, ctenar.Id);
+            MessageBox.Show(result.Message);
+
+            if (result.Success)
+            {
+                Obnovit();
+            }
+
+            return result.Success;
+        }
+
+        public static void Zrusit(object cO, object kO)
+        {
+            var ctenar = (Ctenar)cO;
+            var kniha = (Kniha)kO;
+
+            var rezervace = _rezervaceRepository
+                .GetReservationsByReaderId(ctenar.Id)
+                .FirstOrDefault(r => r.KnihaId == kniha.Id && r.Stav == "Aktivni");
+
+            if (rezervace == null)
+            {
+                MessageBox.Show("Rezervace nebyla nalezena.");
+                return;
+            }
+
+            Result result = _libraryService.CancelReservation(rezervace.Id);
+            MessageBox.Show(result.Message);
+
+            if (result.Success)
+            {
+                Obnovit();
+            }
+        }
+
+        public static bool EditovanaKniha(Kniha kniha)
+        {
+            if (_vypujckaRepository.HasActiveLoanForBook(kniha.Id) ||
+                _rezervaceRepository.HasActiveReservationForBook(kniha.Id))
+            {
+                MessageBox.Show("Knihu nemůžeš editovat, protože je vypůjčená nebo rezervovaná.");
                 return false;
             }
-
-            var rezervace = ctenar.Rezervovano.FirstOrDefault(k => k.ISBN == kniha.ISBN);
-
-            if (rezervace != null)
-            {
-                ctenar.Rezervovano.Remove(rezervace);
-            }
-
-            ctenar.Vypujcene.Add(kniha);
-            kniha.Dostupnost = false;
 
             return true;
         }
-        public static void Vratit(object cO, object kO)//metoda pro vraceni vypujcene knihy
-        {
-            var ctenar = (Ctenar)cO;
-            var kniha = (Kniha)kO;
-            ctenar.Vypujcene.Remove(kniha);
-            kniha.Dostupnost = true;
-        }
-        public static bool Rezervovat(object cO, object kO)//metoda pro rezervaci
-        {
-            var ctenar = (Ctenar)cO;
-            var kniha = (Kniha)kO;
 
-            if (kniha.Dostupnost == true)
-            {
-                MessageBox.Show("Kniha je dostupná, můžeš si ji rovnou vypůjčit.");
-                return false;
-            }
-
-            if (ctenar.Vypujcene.Any(k => k.ISBN == kniha.ISBN))
-            {
-                MessageBox.Show("Knihu máš už vypůjčenou, nemůžeš ji rezervovat!");
-                return false;
-            }
-
-            if (ctenar.Rezervovano.Any(k => k.ISBN == kniha.ISBN))
-            {
-                MessageBox.Show("Knihu už máš rezervovanou!");
-                return false;
-            }
-
-            ctenar.Rezervovano.Add(kniha);
-            return true;
-        }
-        public static void Zrusit(object cO, object kO)//metoda pro zruseni rezervace
-        {
-            var ctenar = (Ctenar)cO;
-            var kniha = (Kniha)kO;
-            ctenar.Rezervovano.Remove(kniha);
-        }
-        public static bool EditovanaKniha(Kniha kniha)//metoda pro kontrolu jestli muze byt kniha editovana
-        {
-            foreach (var ctenar in Ctenari)
-            {
-                //kontrola, ze nemuze byt kniha editovana, kdyz je pujcena nebo rezervovana
-                if (ctenar.Vypujcene.Contains(kniha) || ctenar.Rezervovano.Contains(kniha))
-                { MessageBox.Show("Knihu nemůžeš editovat, protože je vypůjčená nebo rezervovaná."); return false; }
-            }
-            return true;
-        }
-        public static bool SmazatKnihu(Kniha kniha)//metoda pro smazani knihy z databaze
+        public static bool SmazatKnihu(Kniha kniha)
         {
             if (Knihy.Count == 1)
-            { MessageBox.Show("Nemůžeš smazat poslední knihu. V databázi musí zůstat alespoň jedna kniha!"); return false; }
+            {
+                MessageBox.Show("Nemůžeš smazat poslední knihu. V databázi musí zůstat alespoň jedna kniha!");
+                return false;
+            }
 
             var smazani = MessageBox.Show("Opravdu chceš smazat knihu?", "Smazání knihy", MessageBoxButtons.YesNo);
-            if (smazani == DialogResult.Yes)
-            { Knihy.Remove(kniha); return true; }
 
-            return false;
+            if (smazani != DialogResult.Yes)
+            {
+                return false;
+            }
+
+            Result result = _libraryService.DeleteBook(kniha.Id);
+            MessageBox.Show(result.Message);
+
+            if (result.Success)
+            {
+                Obnovit();
+            }
+
+            return result.Success;
         }
-        public static void VratitKnihy(Ctenar ctenar)//metoda pro vraceni vsech vypujcenych knih
+
+        public static void VratitKnihy(Ctenar ctenar)
         {
             foreach (var kniha in ctenar.Vypujcene.ToList())
-            { kniha.Dostupnost = true; }
-            ctenar.Vypujcene.Clear();
+            {
+                _libraryService.ReturnBook(kniha.Id);
+            }
+
+            Obnovit();
         }
-        public static bool SmazatCtenare(Ctenar ctenar)//metoda pro smazani ctenare z databaze
+
+        public static bool SmazatCtenare(Ctenar ctenar)
         {
             if (Ctenari.Count == 1)
-            { MessageBox.Show("Nemůžeš smazat posledního čtenáře. V databázi musí zůstat alespoň jeden čtenář!"); return false; }
+            {
+                MessageBox.Show("Nemůžeš smazat posledního čtenáře. V databázi musí zůstat alespoň jeden čtenář!");
+                return false;
+            }
 
             var smazani = MessageBox.Show("Opravdu chceš smazat čtenáře?", "Smazání čtenáře", MessageBoxButtons.YesNo);
 
-            //jestli smazeme ctenare, ktery ma vypujcenou knihu, tak volame metodu VratitKnihy, ktera ji vrati
-            if (smazani == DialogResult.Yes)
-            { VratitKnihy(ctenar); Ctenari.Remove(ctenar); return true; }
+            if (smazani != DialogResult.Yes)
+            {
+                return false;
+            }
 
-            return false;
+            Result result = _libraryService.DeleteReader(ctenar.Id);
+            MessageBox.Show(result.Message);
+
+            if (result.Success)
+            {
+                Obnovit();
+            }
+
+            return result.Success;
         }
+
         public static bool SmazatelnaKniha(Kniha kniha)
         {
-            foreach (Ctenar ctenar in Ctenari)
+            if (_vypujckaRepository.HasActiveLoanForBook(kniha.Id) ||
+                _rezervaceRepository.HasActiveReservationForBook(kniha.Id))
             {
-                if (ctenar.Vypujcene.Contains(kniha) || ctenar.Rezervovano.Contains(kniha))
-                {
-                    MessageBox.Show("Knihu nelze smazat, protože je vypůjčená nebo rezervovaná.");
-                    return false;
-                }
+                MessageBox.Show("Knihu nelze smazat, protože je vypůjčená nebo rezervovaná.");
+                return false;
             }
 
             return true;
         }
-        public static void Serializuj()//metoda ktera uklada data do XML souboru
+
+        //puvodni XML metoda uz nic neuklada, data se ukladaji primo do SQLite databaze
+        public static void Serializuj()
         {
-            SerializujList(Ctenari, "ctenari.xml");
-            SerializujList(Knihy, "knihy.xml");
         }
-        private static void SerializujList<T>(BindingList<T> list, string soubor)//metoda ktera seznamy do XML souboru
+
+        //puvodni XML metoda je nahrazena nacitanim ze SQLite databaze
+        public static void Deserializuj()
         {
-            using (var s = File.Open(soubor, FileMode.Create))
-            {
-                var x = new XmlSerializer(typeof(BindingList<T>));
-                x.Serialize(s, list);
-            }
-        }
-        public static void Deserializuj()//metoda ktera nacita data ze souboru
-        {
-            Ctenari = DeserializujList<Ctenar>("ctenari.xml");
-            Knihy = DeserializujList<Kniha>("knihy.xml");
-            //aktualizuje odkazy na knihy podle ISBN
-            foreach (var ctenar in Ctenari)//prochazi vsechny ctenare
-            {
-                //sjednotit vypujcene
-                for (int i = 0; i < ctenar.Vypujcene.Count; i++)
-                {
-                    var k1 = ctenar.Vypujcene[i];
-                    //najit knihu podle ISBN v Databaze.Knihy
-                    var real = Knihy.FirstOrDefault(k => k.ISBN == k1.ISBN);
-                    if (real != null)
-                    { ctenar.Vypujcene[i] = real; }
-                }
-                //sjednotit Rezervovano
-                for (int i = 0; i < ctenar.Rezervovano.Count; i++)
-                {
-                    var k1 = ctenar.Rezervovano[i];
-                    var real = Knihy.FirstOrDefault(k => k.ISBN == k1.ISBN);
-                    if (real != null)
-                    { ctenar.Rezervovano[i] = real; }
-                }
-            }
-        }
-        private static BindingList<T> DeserializujList<T>(string soubor)//nacteni seznamu z XML souboru
-        {
-            if (!File.Exists(soubor)) return new BindingList<T>();
-            using (var s = File.Open(soubor, FileMode.Open))
-            {
-                var x = new XmlSerializer(typeof(BindingList<T>));
-                return (BindingList<T>)x.Deserialize(s);
-            }
+            NacistData();
         }
     }
 }
