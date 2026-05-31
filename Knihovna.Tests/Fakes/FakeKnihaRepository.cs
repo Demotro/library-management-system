@@ -54,5 +54,10 @@ namespace Knihovna.Tests.Fakes
         {
             return _knihy.Any(k => k.ISBN == isbn);
         }
+
+        public bool ExistsByIsbnExceptId(string isbn, int id)
+        {
+            return _knihy.Any(k => k.ISBN == isbn && k.Id != id);
+        }
     }
 }

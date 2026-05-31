@@ -15,5 +15,7 @@ namespace Knihovna
         void Delete(int id);
 
         bool ExistsByIsbn(string isbn);
+
+        bool ExistsByIsbnExceptId(string isbn, int id);
     }
 }

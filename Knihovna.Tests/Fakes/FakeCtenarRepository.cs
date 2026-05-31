@@ -54,5 +54,10 @@ namespace Knihovna.Tests.Fakes
         {
             return _ctenari.Any(c => c.Email == email);
         }
+
+        public bool ExistsByEmailExceptId(string email, int id)
+        {
+            return _ctenari.Any(c => c.Email == email && c.Id != id);
+        }
     }
 }

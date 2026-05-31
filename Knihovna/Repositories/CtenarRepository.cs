@@ -130,6 +130,26 @@ namespace Knihovna
             return count > 0;
         }
 
+        public bool ExistsByEmailExceptId(string email, int id)
+        {
+            using var connection = Database.CreateConnection();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                SELECT COUNT(*)
+                FROM Ctenari
+                WHERE Email = @Email
+                  AND Id != @Id;
+            ";
+
+            command.Parameters.AddWithValue("@Email", email);
+            command.Parameters.AddWithValue("@Id", id);
+
+            long count = Convert.ToInt64(command.ExecuteScalar());
+
+            return count > 0;
+        }
+
         private Ctenar CreateReaderFromReader(SqliteDataReader reader)
         {
             int id = reader.GetInt32(0);

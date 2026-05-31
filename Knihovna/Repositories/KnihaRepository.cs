@@ -133,6 +133,26 @@ namespace Knihovna
             return count > 0;
         }
 
+        public bool ExistsByIsbnExceptId(string isbn, int id)
+        {
+            using var connection = Database.CreateConnection();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = @"
+                SELECT COUNT(*)
+                FROM Knihy
+                WHERE ISBN = @ISBN
+                  AND Id != @Id;
+            ";
+
+            command.Parameters.AddWithValue("@ISBN", isbn);
+            command.Parameters.AddWithValue("@Id", id);
+
+            long count = Convert.ToInt64(command.ExecuteScalar());
+
+            return count > 0;
+        }
+
         private Kniha CreateBookFromReader(SqliteDataReader reader)
         {
             int id = reader.GetInt32(0);

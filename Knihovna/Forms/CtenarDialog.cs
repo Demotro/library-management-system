@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml;
 
 namespace Knihovna
 {
@@ -69,7 +62,16 @@ namespace Knihovna
                 return;
             }
 
+            string jmeno = txtJmeno.Text.Trim();
+            string prijmeni = txtPrijmeni.Text.Trim();
+            string email = txtEmail.Text.Trim();
             string telCislo = txtTelCislo.Text.Trim();
+
+            if (!email.Contains("@") || !email.Contains("."))
+            {
+                MessageBox.Show("E-mail musí být ve správném formátu.");
+                return;
+            }
 
             if (!telCislo.All(char.IsDigit) || telCislo.Length != 9)
             {
@@ -77,11 +79,31 @@ namespace Knihovna
                 return;
             }
 
+            bool emailExistuje = false;
+
+            if (Action == ActionType.New)
+            {
+                emailExistuje = Databaze.Ctenari.Any(c =>
+                    c.Email.ToLower() == email.ToLower());
+            }
+            else if (Action == ActionType.Edit)
+            {
+                emailExistuje = Databaze.Ctenari.Any(c =>
+                    c.Email.ToLower() == email.ToLower() &&
+                    c.Id != Ctenar.Id);
+            }
+
+            if (emailExistuje)
+            {
+                MessageBox.Show("Tento e-mail již má jiný čtenář. Zadej jiný e-mail.");
+                return;
+            }
+
             Ctenar novyCtenar = new Ctenar(
-                txtJmeno.Text.Trim(),
-                txtPrijmeni.Text.Trim(),
+                jmeno,
+                prijmeni,
                 telCislo,
-                txtEmail.Text.Trim()
+                email
             );
 
             if (Action == ActionType.Edit)

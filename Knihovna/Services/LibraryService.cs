@@ -66,6 +66,26 @@ namespace Knihovna
                 return Result.Fail("Kniha nebyla nalezena.");
             }
 
+            if (string.IsNullOrWhiteSpace(kniha.Nazev))
+            {
+                return Result.Fail("Název knihy je povinný.");
+            }
+
+            if (string.IsNullOrWhiteSpace(kniha.Autor))
+            {
+                return Result.Fail("Autor knihy je povinný.");
+            }
+
+            if (string.IsNullOrWhiteSpace(kniha.ISBN))
+            {
+                return Result.Fail("ISBN je povinné.");
+            }
+
+            if (_knihaRepository.ExistsByIsbnExceptId(kniha.ISBN, kniha.Id))
+            {
+                return Result.Fail("Jiná kniha s tímto ISBN už existuje.");
+            }
+
             if (_vypujckaRepository.HasActiveLoanForBook(kniha.Id))
             {
                 return Result.Fail("Knihu nelze upravit, protože je aktuálně vypůjčená.");
@@ -146,6 +166,31 @@ namespace Knihovna
             if (existingReader == null)
             {
                 return Result.Fail("Čtenář nebyl nalezen.");
+            }
+
+            if (string.IsNullOrWhiteSpace(ctenar.Jmeno))
+            {
+                return Result.Fail("Jméno čtenáře je povinné.");
+            }
+
+            if (string.IsNullOrWhiteSpace(ctenar.Prijmeni))
+            {
+                return Result.Fail("Příjmení čtenáře je povinné.");
+            }
+
+            if (string.IsNullOrWhiteSpace(ctenar.Email))
+            {
+                return Result.Fail("E-mail čtenáře je povinný.");
+            }
+
+            if (string.IsNullOrWhiteSpace(ctenar.TelefonniCislo))
+            {
+                return Result.Fail("Telefonní číslo je povinné.");
+            }
+
+            if (_ctenarRepository.ExistsByEmailExceptId(ctenar.Email, ctenar.Id))
+            {
+                return Result.Fail("Jiný čtenář s tímto e-mailem už existuje.");
             }
 
             _ctenarRepository.Update(ctenar);

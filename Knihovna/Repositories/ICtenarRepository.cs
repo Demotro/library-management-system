@@ -15,5 +15,7 @@ namespace Knihovna
         void Delete(int id);
 
         bool ExistsByEmail(string email);
+
+        bool ExistsByEmailExceptId(string email, int id);
     }
 }
