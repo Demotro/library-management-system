@@ -68,6 +68,18 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void UpdateBook_WhenBookDoesNotExist_ShouldFail()
+        {
+            var kniha = new DobraKniha("Missing Book", "Missing Author", "1234567890", 2020);
+            kniha.Id = 999;
+
+            Result result = _service.UpdateBook(kniha);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Kniha nebyla nalezena.", result.Message);
+        }
+
+        [TestMethod]
         public void UpdateBook_WhenIsbnHasInvalidFormat_ShouldFail()
         {
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
@@ -131,6 +143,18 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void UpdateReader_WhenReaderDoesNotExist_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            ctenar.Id = 999;
+
+            Result result = _service.UpdateReader(ctenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Čtenář nebyl nalezen.", result.Message);
+        }
+
+        [TestMethod]
         public void UpdateReader_WhenEmailHasInvalidFormat_ShouldFail()
         {
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
@@ -174,6 +198,30 @@ namespace Knihovna.Tests
             Assert.IsTrue(result.Success);
             Assert.IsTrue(_vypujckaRepository.HasActiveLoanForBook(kniha.Id));
             Assert.IsTrue(_vypujckaRepository.HasActiveLoanForReader(ctenar.Id));
+        }
+
+        [TestMethod]
+        public void BorrowBook_WhenBookDoesNotExist_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            Result result = _service.BorrowBook(999, ctenar.Id);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Kniha nebyla nalezena.", result.Message);
+        }
+
+        [TestMethod]
+        public void BorrowBook_WhenReaderDoesNotExist_ShouldFail()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+            _knihaRepository.Add(kniha);
+
+            Result result = _service.BorrowBook(kniha.Id, 999);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Čtenář nebyl nalezen.", result.Message);
         }
 
         [TestMethod]
@@ -307,6 +355,27 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void ReturnBook_WhenBookDoesNotExist_ShouldFail()
+        {
+            Result result = _service.ReturnBook(999);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Kniha nebyla nalezena.", result.Message);
+        }
+
+        [TestMethod]
+        public void ReturnBook_WhenBookIsNotBorrowed_ShouldFail()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+            _knihaRepository.Add(kniha);
+
+            Result result = _service.ReturnBook(kniha.Id);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Kniha není aktuálně vypůjčená.", result.Message);
+        }
+
+        [TestMethod]
         public void ReserveBook_WhenBookIsAvailable_ShouldFail()
         {
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
@@ -319,6 +388,30 @@ namespace Knihovna.Tests
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Dostupnou knihu nelze rezervovat, protože ji lze rovnou půjčit.", result.Message);
+        }
+
+        [TestMethod]
+        public void ReserveBook_WhenBookDoesNotExist_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            Result result = _service.ReserveBook(999, ctenar.Id);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Kniha nebyla nalezena.", result.Message);
+        }
+
+        [TestMethod]
+        public void ReserveBook_WhenReaderDoesNotExist_ShouldFail()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+            _knihaRepository.Add(kniha);
+
+            Result result = _service.ReserveBook(kniha.Id, 999);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Čtenář nebyl nalezen.", result.Message);
         }
 
         [TestMethod]
@@ -429,6 +522,15 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void DeleteBook_WhenBookDoesNotExist_ShouldFail()
+        {
+            Result result = _service.DeleteBook(999);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Kniha nebyla nalezena.", result.Message);
+        }
+
+        [TestMethod]
         public void DeleteBook_WhenBookHasActiveLoan_ShouldFail()
         {
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
@@ -511,6 +613,15 @@ namespace Knihovna.Tests
             Assert.AreEqual("Kniha byla úspěšně smazána.", result.Message);
             Assert.IsNull(_knihaRepository.GetById(kniha.Id));
             Assert.IsFalse(_rezervaceRepository.GetAll().Any(r => r.KnihaId == kniha.Id));
+        }
+
+        [TestMethod]
+        public void DeleteReader_WhenReaderDoesNotExist_ShouldFail()
+        {
+            Result result = _service.DeleteReader(999);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Čtenář nebyl nalezen.", result.Message);
         }
 
         [TestMethod]
