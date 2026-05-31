@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Knihovna.Tests.Fakes;
 
 namespace Knihovna.Tests
@@ -288,6 +289,38 @@ namespace Knihovna.Tests
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Knihu nelze smazat, protože má aktivní rezervace.", result.Message);
+        }
+
+        [TestMethod]
+        public void DeleteBook_WhenBookHasOnlyReturnedLoans_ShouldSucceed()
+        {
+            var knihaRepository = new FakeKnihaRepository();
+            var ctenarRepository = new FakeCtenarRepository();
+            var vypujckaRepository = new FakeVypujckaRepository();
+            var rezervaceRepository = new FakeRezervaceRepository();
+
+            var service = CreateService(
+                knihaRepository,
+                ctenarRepository,
+                vypujckaRepository,
+                rezervaceRepository
+            );
+
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+
+            knihaRepository.Add(kniha);
+            ctenarRepository.Add(ctenar);
+
+            service.BorrowBook(kniha.Id, ctenar.Id);
+            service.ReturnBook(kniha.Id);
+
+            Result result = service.DeleteBook(kniha.Id);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Kniha byla úspěšně smazána.", result.Message);
+            Assert.IsNull(knihaRepository.GetById(kniha.Id));
+            Assert.IsFalse(vypujckaRepository.GetAll().Any(v => v.KnihaId == kniha.Id));
         }
 
         [TestMethod]
