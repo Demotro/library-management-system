@@ -64,6 +64,8 @@ namespace Knihovna
             command.CommandText = @"
                 INSERT INTO Ctenari (Jmeno, Prijmeni, TelefonniCislo, Email)
                 VALUES (@Jmeno, @Prijmeni, @TelefonniCislo, @Email);
+
+                SELECT last_insert_rowid();
             ";
 
             command.Parameters.AddWithValue("@Jmeno", ctenar.Jmeno);
@@ -71,7 +73,8 @@ namespace Knihovna
             command.Parameters.AddWithValue("@TelefonniCislo", ctenar.TelefonniCislo);
             command.Parameters.AddWithValue("@Email", ctenar.Email);
 
-            command.ExecuteNonQuery();
+            long newId = (long)command.ExecuteScalar();
+            ctenar.Id = (int)newId;
         }
 
         public void Update(Ctenar ctenar)

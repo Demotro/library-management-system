@@ -64,6 +64,8 @@ namespace Knihovna
             command.CommandText = @"
                 INSERT INTO Knihy (Nazev, Autor, ISBN, RokVydani, StavKnihy)
                 VALUES (@Nazev, @Autor, @ISBN, @RokVydani, @StavKnihy);
+
+                SELECT last_insert_rowid();
             ";
 
             command.Parameters.AddWithValue("@Nazev", kniha.Nazev);
@@ -72,7 +74,8 @@ namespace Knihovna
             command.Parameters.AddWithValue("@RokVydani", kniha.RokVydani);
             command.Parameters.AddWithValue("@StavKnihy", kniha.StavKnihy);
 
-            command.ExecuteNonQuery();
+            long newId = (long)command.ExecuteScalar();
+            kniha.Id = (int)newId;
         }
 
         public void Update(Kniha kniha)
