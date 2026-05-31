@@ -260,6 +260,23 @@ namespace Knihovna
             int? selectedCtenarId = GetSelectedCtenarId();
             int? selectedKnihaId = GetSelectedKnihaId();
 
+            var vypujcenaKniha = dgvVypujcene.CurrentRow.DataBoundItem as Kniha;
+
+            if (vypujcenaKniha == null) return;
+
+            DialogResult potvrzeni = MessageBox.Show(
+                $"Opravdu chcete vrátit knihu \"{vypujcenaKniha.Nazev}\"?",
+                "Potvrzení vrácení knihy",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
+            );
+
+            if (potvrzeni != DialogResult.Yes)
+            {
+                SetButtons();
+                return;
+            }
+
             Databaze.Vratit(
                 dgvCtenari.CurrentRow.DataBoundItem,
                 dgvVypujcene.CurrentRow.DataBoundItem
@@ -295,6 +312,23 @@ namespace Knihovna
 
             int? selectedCtenarId = GetSelectedCtenarId();
             int? selectedKnihaId = GetSelectedKnihaId();
+
+            var rezervovanaKniha = dgvRezervovane.CurrentRow.DataBoundItem as Kniha;
+
+            if (rezervovanaKniha == null) return;
+
+            DialogResult potvrzeni = MessageBox.Show(
+                $"Opravdu chcete zrušit rezervaci knihy \"{rezervovanaKniha.Nazev}\"?",
+                "Potvrzení zrušení rezervace",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
+            );
+
+            if (potvrzeni != DialogResult.Yes)
+            {
+                SetButtons();
+                return;
+            }
 
             Databaze.Zrusit(
                 dgvCtenari.CurrentRow.DataBoundItem,
