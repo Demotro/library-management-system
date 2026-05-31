@@ -1,18 +1,25 @@
 # Library Management System
 
-Desktop application for managing a small library.  
-The application allows users to manage books, readers, loans, returns and reservations.
+Desktop application for managing a small library.
+
+The application allows users to manage books, readers, loans, returns and reservations.  
+It is built as a C# Windows Forms project with a local SQLite database.
 
 ## Features
 
 - Add, edit and delete books
 - Add, edit and delete readers
-- Borrow available books
-- Return borrowed books
+- Borrow and return books
 - Reserve borrowed books
-- Cancel book reservations
-- Prevent deleting borrowed or reserved books
-- Store data in a local SQLite database
+- Cancel reservations
+- FIFO reservation queue
+- Limit of 5 active loans per reader
+- Limit of 5 active reservations per reader
+- Search and filter books
+- Search readers
+- Input validation for ISBN, e-mail, phone number and required fields
+- Prevent deleting books or readers with active loans or reservations
+- Local SQLite database storage
 
 ## Technologies Used
 
@@ -24,19 +31,20 @@ The application allows users to manage books, readers, loans, returns and reserv
 - Object-oriented programming
 - Repository pattern
 - Service layer
+- Unit tests
 
 ## Project Structure
 
 - `Forms/` - Windows Forms user interface
 - `Models/` - application models
-- `Data/` - database connection and initialization
-- `Repositories/` - database CRUD operations
+- `Data/` - database connection and database setup
+- `Repositories/` - database access and CRUD operations
 - `Services/` - main application logic
+- `Tests/` - unit tests and fake repositories
 
 ## Database
 
-The application uses a local SQLite database.  
-The database is created automatically when the application starts.
+The application uses a local SQLite database.
 
 Main tables:
 
@@ -45,14 +53,30 @@ Main tables:
 - `Vypujcky`
 - `Rezervace`
 
+The database is created automatically when the application runs.
+
 ## How It Works
 
-Books and readers are stored in a SQLite database.  
-Loans and reservations are also stored in the database.
+Books and readers are stored in the SQLite database.
 
-Books can be borrowed only if they are available.  
-Borrowed books can be reserved by readers.  
-Available books cannot be reserved because they can be borrowed directly.
+A book can be borrowed if it is available.  
+If a book is already borrowed, another reader can reserve it.  
+Reservations are handled in order, so the first reader in the queue has priority.
+
+The main business logic is separated into a service layer, and database operations are handled through repositories.
+
+## Tests
+
+The project includes unit tests for the main application logic, including:
+
+- book validation
+- reader validation
+- borrowing and returning books
+- reservations
+- reservation queue
+- loan limits
+- reservation limits
+- delete restrictions
 
 ## How to Run
 
@@ -63,23 +87,15 @@ Available books cannot be reserved because they can be borrowed directly.
 
 ## Purpose
 
-This project was created to practice C# desktop application development with Windows Forms.
+This project was created to practice C# desktop application development.
 
 It demonstrates:
 
-- CRUD operations
+- Windows Forms UI
 - SQLite database usage
-- Object-oriented programming
-- Repository pattern
-- Service layer
-- Basic layered architecture
-- Book loan and reservation logic
-
-## Future Improvements
-
-- Add unit tests
-- Improve UI layout
-- Add search and filtering
-- Improve reservation queue visualization
-- Add screenshots to README
-- Add better error handling
+- layered architecture
+- repository pattern
+- service layer
+- validation
+- unit testing
+- basic library management logic
