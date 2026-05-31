@@ -277,6 +277,39 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void AddReader_WhenEmailHasMultipleAtSymbols_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@@test.cz");
+
+            Result result = _service.AddReader(ctenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("E-mail musí být ve správném formátu.", result.Message);
+        }
+
+        [TestMethod]
+        public void AddReader_WhenEmailDomainStartsWithDot_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@.cz");
+
+            Result result = _service.AddReader(ctenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("E-mail musí být ve správném formátu.", result.Message);
+        }
+
+        [TestMethod]
+        public void AddReader_WhenEmailDomainEndsWithDot_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.");
+
+            Result result = _service.AddReader(ctenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("E-mail musí být ve správném formátu.", result.Message);
+        }
+
+        [TestMethod]
         public void AddReader_WhenPhoneNumberHasInvalidFormat_ShouldFail()
         {
             var ctenar = new Ctenar("Jan", "Novak", "12345", "jan@test.cz");
