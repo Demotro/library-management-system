@@ -16,7 +16,7 @@ namespace Knihovna
         }
 
         //obnovi datove zdroje po zmene v databazi
-        private void RefreshDataSources()
+        private void RefreshDataSources(int? selectedCtenarId = null, int? selectedKnihaId = null)
         {
             dgvCtenari.DataSource = null;
             dgvKnihy.DataSource = null;
@@ -26,8 +26,78 @@ namespace Knihovna
             dgvCtenari.DataSource = Databaze.Ctenari;
             dgvKnihy.DataSource = Databaze.Knihy;
 
+            if (selectedCtenarId.HasValue)
+            {
+                SelectCtenarById(selectedCtenarId.Value);
+            }
+
+            if (selectedKnihaId.HasValue)
+            {
+                SelectKnihaById(selectedKnihaId.Value);
+            }
+
             RefreshSelectedReaderBooks();
             SetButtons();
+        }
+
+        //vrati ID aktualne vybraneho ctenare
+        private int? GetSelectedCtenarId()
+        {
+            if (dgvCtenari.CurrentRow == null) return null;
+
+            var ctenar = dgvCtenari.CurrentRow.DataBoundItem as Ctenar;
+
+            if (ctenar == null) return null;
+
+            return ctenar.Id;
+        }
+
+        //vrati ID aktualne vybrane knihy
+        private int? GetSelectedKnihaId()
+        {
+            if (dgvKnihy.CurrentRow == null) return null;
+
+            var kniha = dgvKnihy.CurrentRow.DataBoundItem as Kniha;
+
+            if (kniha == null) return null;
+
+            return kniha.Id;
+        }
+
+        //znovu vybere ctenare podle ID
+        private void SelectCtenarById(int ctenarId)
+        {
+            dgvCtenari.ClearSelection();
+
+            foreach (DataGridViewRow row in dgvCtenari.Rows)
+            {
+                var ctenar = row.DataBoundItem as Ctenar;
+
+                if (ctenar != null && ctenar.Id == ctenarId)
+                {
+                    row.Selected = true;
+                    dgvCtenari.CurrentCell = row.Cells[0];
+                    return;
+                }
+            }
+        }
+
+        //znovu vybere knihu podle ID
+        private void SelectKnihaById(int knihaId)
+        {
+            dgvKnihy.ClearSelection();
+
+            foreach (DataGridViewRow row in dgvKnihy.Rows)
+            {
+                var kniha = row.DataBoundItem as Kniha;
+
+                if (kniha != null && kniha.Id == knihaId)
+                {
+                    row.Selected = true;
+                    dgvKnihy.CurrentCell = row.Cells[0];
+                    return;
+                }
+            }
         }
 
         //obnovi vypujcene a rezervovane knihy vybraneho ctenare
@@ -75,6 +145,9 @@ namespace Knihovna
         {
             if (dgvCtenari.CurrentRow == null || dgvKnihy.CurrentRow == null) return;
 
+            int? selectedCtenarId = GetSelectedCtenarId();
+            int? selectedKnihaId = GetSelectedKnihaId();
+
             bool success = Databaze.Vypujcit(
                 dgvCtenari.CurrentRow.DataBoundItem,
                 dgvKnihy.CurrentRow.DataBoundItem
@@ -82,7 +155,7 @@ namespace Knihovna
 
             if (success)
             {
-                RefreshDataSources();
+                RefreshDataSources(selectedCtenarId, selectedKnihaId);
             }
 
             SetButtons();
@@ -92,18 +165,24 @@ namespace Knihovna
         {
             if (dgvCtenari.CurrentRow == null || dgvVypujcene.CurrentRow == null) return;
 
+            int? selectedCtenarId = GetSelectedCtenarId();
+            int? selectedKnihaId = GetSelectedKnihaId();
+
             Databaze.Vratit(
                 dgvCtenari.CurrentRow.DataBoundItem,
                 dgvVypujcene.CurrentRow.DataBoundItem
             );
 
-            RefreshDataSources();
+            RefreshDataSources(selectedCtenarId, selectedKnihaId);
             SetButtons();
         }
 
         private void btnRezervovat_Click(object sender, EventArgs e)
         {
             if (dgvCtenari.CurrentRow == null || dgvKnihy.CurrentRow == null) return;
+
+            int? selectedCtenarId = GetSelectedCtenarId();
+            int? selectedKnihaId = GetSelectedKnihaId();
 
             bool success = Databaze.Rezervovat(
                 dgvCtenari.CurrentRow.DataBoundItem,
@@ -112,7 +191,7 @@ namespace Knihovna
 
             if (success)
             {
-                RefreshDataSources();
+                RefreshDataSources(selectedCtenarId, selectedKnihaId);
             }
 
             SetButtons();
@@ -122,18 +201,20 @@ namespace Knihovna
         {
             if (dgvCtenari.CurrentRow == null || dgvRezervovane.CurrentRow == null) return;
 
+            int? selectedCtenarId = GetSelectedCtenarId();
+            int? selectedKnihaId = GetSelectedKnihaId();
+
             Databaze.Zrusit(
                 dgvCtenari.CurrentRow.DataBoundItem,
                 dgvRezervovane.CurrentRow.DataBoundItem
             );
 
-            RefreshDataSources();
+            RefreshDataSources(selectedCtenarId, selectedKnihaId);
             SetButtons();
         }
 
         private void btnNovyCtenar_Click(object sender, EventArgs e)
         {
-            //zobrazeni dialogu pro vytvoreni noveho ctenare 
             using (var dlg = new CtenarDialog())
             {
                 dlg.Action = ActionType.New;
@@ -141,7 +222,7 @@ namespace Knihovna
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     Databaze.PridatCtenare(dlg.Ctenar);
-                    RefreshDataSources();
+                    RefreshDataSources(dlg.Ctenar.Id, GetSelectedKnihaId());
                 }
             }
 
@@ -154,7 +235,6 @@ namespace Knihovna
 
             var vybranyCtenar = (Ctenar)dgvCtenari.CurrentRow.DataBoundItem;
 
-            //zobrazeni dialogu pro editaci ctenare
             using (var dlg = new CtenarDialog())
             {
                 dlg.Action = ActionType.Edit;
@@ -163,7 +243,7 @@ namespace Knihovna
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     Databaze.UpravitCtenare(dlg.Ctenar);
-                    RefreshDataSources();
+                    RefreshDataSources(dlg.Ctenar.Id, GetSelectedKnihaId());
                 }
             }
 
@@ -172,7 +252,6 @@ namespace Knihovna
 
         private void btnNovaKniha_Click(object sender, EventArgs e)
         {
-            //zobrazeni dialogu pro vytvoreni nove knihy
             using (var dlg = new KnihaDialog())
             {
                 dlg.Action = ActionType1.New;
@@ -180,7 +259,7 @@ namespace Knihovna
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     Databaze.PridatKnihu(dlg.Kniha);
-                    RefreshDataSources();
+                    RefreshDataSources(GetSelectedCtenarId(), dlg.Kniha.Id);
                 }
             }
 
@@ -193,10 +272,8 @@ namespace Knihovna
 
             var vybranaKniha = (Kniha)dgvKnihy.CurrentRow.DataBoundItem;
 
-            //kontrola, jestli muzeme knihu editovat
             if (Databaze.EditovanaKniha(vybranaKniha))
             {
-                //zobrazeni dialogu pro editaci knihy
                 using (var dlg = new KnihaDialog())
                 {
                     dlg.Action = ActionType1.Edit;
@@ -205,7 +282,7 @@ namespace Knihovna
                     if (dlg.ShowDialog() == DialogResult.OK)
                     {
                         Databaze.UpravitKnihu(dlg.Kniha);
-                        RefreshDataSources();
+                        RefreshDataSources(GetSelectedCtenarId(), dlg.Kniha.Id);
                     }
                 }
             }
@@ -217,6 +294,8 @@ namespace Knihovna
         {
             if (dgvKnihy.CurrentRow == null) return;
 
+            int? selectedCtenarId = GetSelectedCtenarId();
+
             var vybranaKniha = (Kniha)dgvKnihy.CurrentRow.DataBoundItem;
 
             if (Databaze.SmazatelnaKniha(vybranaKniha))
@@ -225,7 +304,7 @@ namespace Knihovna
 
                 if (success)
                 {
-                    RefreshDataSources();
+                    RefreshDataSources(selectedCtenarId, null);
                 }
             }
 
@@ -236,13 +315,15 @@ namespace Knihovna
         {
             if (dgvCtenari.CurrentRow == null) return;
 
+            int? selectedKnihaId = GetSelectedKnihaId();
+
             var vybranyCtenar = (Ctenar)dgvCtenari.CurrentRow.DataBoundItem;
 
             bool success = Databaze.SmazatCtenare(vybranyCtenar);
 
             if (success)
             {
-                RefreshDataSources();
+                RefreshDataSources(null, selectedKnihaId);
             }
 
             SetButtons();
