@@ -15,7 +15,13 @@ namespace Knihovna
         private static readonly ICtenarRepository _ctenarRepository = new CtenarRepository();
         private static readonly IVypujckaRepository _vypujckaRepository = new VypujckaRepository();
         private static readonly IRezervaceRepository _rezervaceRepository = new RezervaceRepository();
-        private static readonly LibraryService _libraryService = new LibraryService();
+
+        private static readonly LibraryService _libraryService = new LibraryService(
+            _knihaRepository,
+            _ctenarRepository,
+            _vypujckaRepository,
+            _rezervaceRepository
+        );
 
         static Databaze()
         {
