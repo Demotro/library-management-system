@@ -11,31 +11,44 @@ The application allows users to manage books, readers, loans, returns and reserv
 - Return borrowed books
 - Reserve borrowed books
 - Cancel book reservations
-- Prevent deleting books that are currently borrowed or reserved
-- Save and load data using XML files
+- Prevent deleting borrowed or reserved books
+- Store data in a local SQLite database
 
 ## Technologies Used
 
 - C#
 - .NET 8
 - Windows Forms
-- XML serialization
+- SQLite
+- Microsoft.Data.Sqlite
 - Object-oriented programming
+- Repository pattern
+- Service layer
 
 ## Project Structure
 
-- `Form1.cs` - main application form and user interface logic
-- `Databaze.cs` - main data handling and application logic
-- `Kniha.cs` - book model
-- `Ctenar.cs` - reader model
-- `KnihaDialog.cs` - dialog for adding and editing books
-- `CtenarDialog.cs` - dialog for adding and editing readers
+- `Forms/` - Windows Forms user interface
+- `Models/` - application models
+- `Data/` - database connection and initialization
+- `Repositories/` - database CRUD operations
+- `Services/` - main application logic
+
+## Database
+
+The application uses a local SQLite database.  
+The database is created automatically when the application starts.
+
+Main tables:
+
+- `Knihy`
+- `Ctenari`
+- `Vypujcky`
+- `Rezervace`
 
 ## How It Works
 
-The application stores books and readers in memory while it is running.  
-When the application is closed, the data is saved into XML files.  
-When the application starts again, the saved data is loaded back into the application.
+Books and readers are stored in a SQLite database.  
+Loans and reservations are also stored in the database.
 
 Books can be borrowed only if they are available.  
 Borrowed books can be reserved by readers.  
@@ -43,11 +56,30 @@ Available books cannot be reserved because they can be borrowed directly.
 
 ## How to Run
 
-1. Open the solution file `Knihovna.sln` in Visual Studio.
-2. Build the solution.
-3. Run the application.
+1. Open `Knihovna.sln` in Visual Studio.
+2. Restore NuGet packages if needed.
+3. Build the solution.
+4. Run the application.
 
 ## Purpose
 
-This project was created to practice desktop application development in C# using Windows Forms.  
-It demonstrates CRUD operations, object-oriented programming, working with collections and saving/loading data using XML serialization.
+This project was created to practice C# desktop application development with Windows Forms.
+
+It demonstrates:
+
+- CRUD operations
+- SQLite database usage
+- Object-oriented programming
+- Repository pattern
+- Service layer
+- Basic layered architecture
+- Book loan and reservation logic
+
+## Future Improvements
+
+- Add unit tests
+- Improve UI layout
+- Add search and filtering
+- Improve reservation queue visualization
+- Add screenshots to README
+- Add better error handling
