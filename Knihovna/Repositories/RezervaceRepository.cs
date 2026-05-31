@@ -10,8 +10,7 @@ namespace Knihovna
         {
             List<Rezervace> rezervace = new List<Rezervace>();
 
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -33,8 +32,7 @@ namespace Knihovna
 
         public Rezervace? GetById(int id)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -59,8 +57,7 @@ namespace Knihovna
         {
             List<Rezervace> rezervace = new List<Rezervace>();
 
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -88,8 +85,7 @@ namespace Knihovna
         {
             List<Rezervace> rezervace = new List<Rezervace>();
 
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -114,8 +110,7 @@ namespace Knihovna
 
         public Rezervace? GetFirstActiveReservationByBookId(int knihaId)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -141,13 +136,14 @@ namespace Knihovna
 
         public void Add(Rezervace rezervace)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
                 INSERT INTO Rezervace (KnihaId, CtenarId, DatumRezervace, Stav)
                 VALUES (@KnihaId, @CtenarId, @DatumRezervace, @Stav);
+
+                SELECT last_insert_rowid();
             ";
 
             command.Parameters.AddWithValue("@KnihaId", rezervace.KnihaId);
@@ -155,13 +151,13 @@ namespace Knihovna
             command.Parameters.AddWithValue("@DatumRezervace", rezervace.DatumRezervace.ToString("yyyy-MM-dd HH:mm:ss"));
             command.Parameters.AddWithValue("@Stav", rezervace.Stav);
 
-            command.ExecuteNonQuery();
+            long newId = (long)command.ExecuteScalar();
+            rezervace.Id = (int)newId;
         }
 
         public void Cancel(int id)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -177,8 +173,7 @@ namespace Knihovna
 
         public void MarkAsCompleted(int id)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -194,8 +189,7 @@ namespace Knihovna
 
         public bool ExistsActiveReservation(int knihaId, int ctenarId)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -216,8 +210,7 @@ namespace Knihovna
 
         public bool HasActiveReservationForBook(int knihaId)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -236,8 +229,7 @@ namespace Knihovna
 
         public bool HasActiveReservationForReader(int ctenarId)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"

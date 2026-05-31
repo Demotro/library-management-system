@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.Data.Sqlite;
 
 namespace Knihovna
@@ -10,8 +9,7 @@ namespace Knihovna
         {
             List<Ctenar> ctenari = new List<Ctenar>();
 
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -33,8 +31,7 @@ namespace Knihovna
 
         public Ctenar? GetById(int id)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -57,8 +54,7 @@ namespace Knihovna
 
         public void Add(Ctenar ctenar)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -79,8 +75,7 @@ namespace Knihovna
 
         public void Update(Ctenar ctenar)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -103,8 +98,7 @@ namespace Knihovna
 
         public void Delete(int id)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -119,8 +113,7 @@ namespace Knihovna
 
         public bool ExistsByEmail(string email)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"

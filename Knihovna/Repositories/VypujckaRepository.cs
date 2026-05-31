@@ -10,8 +10,7 @@ namespace Knihovna
         {
             List<Vypujcka> vypujcky = new List<Vypujcka>();
 
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -35,8 +34,7 @@ namespace Knihovna
         {
             List<Vypujcka> vypujcky = new List<Vypujcka>();
 
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -59,8 +57,7 @@ namespace Knihovna
 
         public Vypujcka? GetById(int id)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -83,8 +80,7 @@ namespace Knihovna
 
         public Vypujcka? GetActiveLoanByBookId(int knihaId)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -111,8 +107,7 @@ namespace Knihovna
         {
             List<Vypujcka> vypujcky = new List<Vypujcka>();
 
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -137,13 +132,14 @@ namespace Knihovna
 
         public void Add(Vypujcka vypujcka)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
                 INSERT INTO Vypujcky (KnihaId, CtenarId, DatumVypujceni, DatumVraceni, Stav)
                 VALUES (@KnihaId, @CtenarId, @DatumVypujceni, @DatumVraceni, @Stav);
+
+                SELECT last_insert_rowid();
             ";
 
             command.Parameters.AddWithValue("@KnihaId", vypujcka.KnihaId);
@@ -152,13 +148,13 @@ namespace Knihovna
             command.Parameters.AddWithValue("@DatumVraceni", DBNull.Value);
             command.Parameters.AddWithValue("@Stav", vypujcka.Stav);
 
-            command.ExecuteNonQuery();
+            long newId = (long)command.ExecuteScalar();
+            vypujcka.Id = (int)newId;
         }
 
         public void MarkAsReturned(int id)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -176,8 +172,7 @@ namespace Knihovna
 
         public bool HasActiveLoanForBook(int knihaId)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"
@@ -196,8 +191,7 @@ namespace Knihovna
 
         public bool HasActiveLoanForReader(int ctenarId)
         {
-            using var connection = new SqliteConnection(Database.ConnectionString);
-            connection.Open();
+            using var connection = Database.CreateConnection();
 
             using var command = connection.CreateCommand();
             command.CommandText = @"

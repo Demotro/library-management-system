@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Microsoft.Data.Sqlite;
 
 namespace Knihovna
 {
@@ -21,6 +22,18 @@ namespace Knihovna
             {
                 return $"Data Source={DatabasePath}";
             }
+        }
+
+        public static SqliteConnection CreateConnection()
+        {
+            var connection = new SqliteConnection(ConnectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = "PRAGMA foreign_keys = ON;";
+            command.ExecuteNonQuery();
+
+            return connection;
         }
     }
 }
