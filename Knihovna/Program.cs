@@ -3,14 +3,16 @@ namespace Knihovna
     internal static class Program
     {
         /// <summary>
-        ///  The main entry point for the application.
+        /// Hlavní vstupní bod aplikace.
         /// </summary>
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
+
+            //vytvori databazi a tabulky, pokud jeste neexistuji
+            DatabaseInitializer.Initialize();
+
             Application.Run(new Form1());
         }
     }

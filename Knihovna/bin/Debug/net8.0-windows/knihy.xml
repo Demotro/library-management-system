@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ArrayOfKniha xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Kniha xsi:type="NovaKniha">
+    <Id>0</Id>
     <Nazev>Pán prstenů: Společenstvo Prstenu</Nazev>
     <Autor>J.R.R. Tolkien</Autor>
     <ISBN>12</ISBN>
@@ -8,6 +9,7 @@
     <Dostupnost>false</Dostupnost>
   </Kniha>
   <Kniha xsi:type="NovaKniha">
+    <Id>0</Id>
     <Nazev>Harry Potter a Kámen mudrců</Nazev>
     <Autor>J.K. Rowling</Autor>
     <ISBN>2</ISBN>
@@ -15,6 +17,7 @@
     <Dostupnost>false</Dostupnost>
   </Kniha>
   <Kniha xsi:type="OpotrebovanaKniha">
+    <Id>0</Id>
     <Nazev>Malý princ</Nazev>
     <Autor>Antoine de Saint-Exupéry</Autor>
     <ISBN>55</ISBN>
@@ -22,6 +25,7 @@
     <Dostupnost>false</Dostupnost>
   </Kniha>
   <Kniha xsi:type="NovaKniha">
+    <Id>0</Id>
     <Nazev>1984</Nazev>
     <Autor>George Orwell</Autor>
     <ISBN>17</ISBN>
@@ -29,6 +33,7 @@
     <Dostupnost>false</Dostupnost>
   </Kniha>
   <Kniha xsi:type="OpotrebovanaKniha">
+    <Id>0</Id>
     <Nazev>Sto roků samoty</Nazev>
     <Autor>Gabriel García Márquez</Autor>
     <ISBN>73</ISBN>
@@ -36,6 +41,7 @@
     <Dostupnost>false</Dostupnost>
   </Kniha>
   <Kniha xsi:type="DobraKniha">
+    <Id>0</Id>
     <Nazev>Na západní frontě klid</Nazev>
     <Autor>Erich Maria Remarque</Autor>
     <ISBN>6</ISBN>
@@ -43,6 +49,7 @@
     <Dostupnost>false</Dostupnost>
   </Kniha>
   <Kniha xsi:type="NovaKniha">
+    <Id>0</Id>
     <Nazev>Alchymista</Nazev>
     <Autor>Paulo Coelho</Autor>
     <ISBN>28</ISBN>
@@ -50,6 +57,7 @@
     <Dostupnost>false</Dostupnost>
   </Kniha>
   <Kniha xsi:type="OpotrebovanaKniha">
+    <Id>0</Id>
     <Nazev>Cesta</Nazev>
     <Autor>Cormac McCarthy</Autor>
     <ISBN>25</ISBN>
@@ -57,6 +65,7 @@
     <Dostupnost>true</Dostupnost>
   </Kniha>
   <Kniha xsi:type="OpotrebovanaKniha">
+    <Id>0</Id>
     <Nazev>Jméno růže</Nazev>
     <Autor>Umberto Eco</Autor>
     <ISBN>5</ISBN>
@@ -64,6 +73,7 @@
     <Dostupnost>true</Dostupnost>
   </Kniha>
   <Kniha xsi:type="NovaKniha">
+    <Id>0</Id>
     <Nazev>Velký Gatsby</Nazev>
     <Autor>F. Scott Fitzgerald</Autor>
     <ISBN>1</ISBN>
@@ -71,6 +81,7 @@
     <Dostupnost>false</Dostupnost>
   </Kniha>
   <Kniha xsi:type="NovaKniha">
+    <Id>0</Id>
     <Nazev>Anna Karenina</Nazev>
     <Autor>Lev Tolstoj</Autor>
     <ISBN>52</ISBN>
@@ -78,6 +89,7 @@
     <Dostupnost>false</Dostupnost>
   </Kniha>
   <Kniha xsi:type="NovaKniha">
+    <Id>0</Id>
     <Nazev>Pýcha a předsudek</Nazev>
     <Autor>Jane Austen</Autor>
     <ISBN>35</ISBN>
@@ -85,6 +97,7 @@
     <Dostupnost>false</Dostupnost>
   </Kniha>
   <Kniha xsi:type="NovaKniha">
+    <Id>0</Id>
     <Nazev>Lovec draků</Nazev>
     <Autor>Khaled Hosseini</Autor>
     <ISBN>64</ISBN>
