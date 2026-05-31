@@ -26,3 +26,7 @@ ctenari.xml
 *.db
 *.db-shm
 *.db-wal
+
+# Test results
+TestResults/
+**/TestResults/
