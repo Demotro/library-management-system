@@ -1041,6 +1041,52 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void BorrowBook_WhenReservationsHaveSameDate_ShouldUseLowerReservationIdFirst()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+            var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "petr@test.cz");
+            var ctenar3 = new Ctenar("Karel", "Dvorak", "111222333", "karel@test.cz");
+
+            _knihaRepository.Add(kniha);
+            _ctenarRepository.Add(ctenar1);
+            _ctenarRepository.Add(ctenar2);
+            _ctenarRepository.Add(ctenar3);
+
+            _service.BorrowBook(kniha.Id, ctenar1.Id);
+
+            DateTime sameReservationDate = new DateTime(2025, 1, 1, 10, 0, 0);
+
+            var firstReservation = new Rezervace
+            {
+                KnihaId = kniha.Id,
+                CtenarId = ctenar2.Id,
+                DatumRezervace = sameReservationDate,
+                Stav = "Aktivni"
+            };
+
+            var secondReservation = new Rezervace
+            {
+                KnihaId = kniha.Id,
+                CtenarId = ctenar3.Id,
+                DatumRezervace = sameReservationDate,
+                Stav = "Aktivni"
+            };
+
+            _rezervaceRepository.Add(firstReservation);
+            _rezervaceRepository.Add(secondReservation);
+
+            _service.ReturnBook(kniha.Id);
+
+            Result result = _service.BorrowBook(kniha.Id, ctenar3.Id);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Kniha je rezervovaná pro jiného čtenáře.", result.Message);
+            Assert.AreEqual(1, firstReservation.Id);
+            Assert.AreEqual(2, secondReservation.Id);
+        }
+
+        [TestMethod]
         public void ReturnBook_WhenBookIsBorrowed_ShouldMarkLoanAsReturned()
         {
             var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
