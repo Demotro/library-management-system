@@ -146,6 +146,31 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void AddReader_WhenEmailContainsSpaces_ShouldSaveNormalizedEmail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", " JAN@Test.cz ");
+
+            Result result = _service.AddReader(ctenar);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("jan@test.cz", ctenar.Email);
+        }
+
+        [TestMethod]
+        public void AddReader_WhenSameEmailHasDifferentCase_ShouldFail()
+        {
+            var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "JAN@Test.cz");
+
+            _service.AddReader(ctenar1);
+
+            Result result = _service.AddReader(ctenar2);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Čtenář s tímto e-mailem už existuje.", result.Message);
+        }
+
+        [TestMethod]
         public void AddReader_WhenEmailHasInvalidFormat_ShouldFail()
         {
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "spatnyemail");
@@ -177,6 +202,22 @@ namespace Knihovna.Tests
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Čtenář nebyl nalezen.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateReader_WhenEmailContainsSpaces_ShouldSaveNormalizedEmail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            var upravenyCtenar = new Ctenar("Jan", "Novak", "123456789", " JAN@Test.cz ");
+            upravenyCtenar.Id = ctenar.Id;
+
+            Result result = _service.UpdateReader(upravenyCtenar);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Čtenář byl úspěšně upraven.", result.Message);
+            Assert.AreEqual("jan@test.cz", upravenyCtenar.Email);
         }
 
         [TestMethod]
