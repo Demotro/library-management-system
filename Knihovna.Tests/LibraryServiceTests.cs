@@ -56,6 +56,32 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void AddBook_WhenIsbnHasInvalidFormat_ShouldFail()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "12345", 2020);
+
+            Result result = _service.AddBook(kniha);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("ISBN musí mít 10 nebo 13 číslic.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateBook_WhenIsbnHasInvalidFormat_ShouldFail()
+        {
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+            _knihaRepository.Add(kniha);
+
+            var upravenaKniha = new DobraKniha("Test Book Updated", "Test Author", "abc123", 2021);
+            upravenaKniha.Id = kniha.Id;
+
+            Result result = _service.UpdateBook(upravenaKniha);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("ISBN musí mít 10 nebo 13 číslic.", result.Message);
+        }
+
+        [TestMethod]
         public void AddReader_WhenDataAreValid_ShouldSucceed()
         {
             var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
@@ -79,6 +105,58 @@ namespace Knihovna.Tests
 
             Assert.IsFalse(result.Success);
             Assert.AreEqual("Čtenář s tímto e-mailem už existuje.", result.Message);
+        }
+
+        [TestMethod]
+        public void AddReader_WhenEmailHasInvalidFormat_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "spatnyemail");
+
+            Result result = _service.AddReader(ctenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("E-mail musí být ve správném formátu.", result.Message);
+        }
+
+        [TestMethod]
+        public void AddReader_WhenPhoneNumberHasInvalidFormat_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "12345", "jan@test.cz");
+
+            Result result = _service.AddReader(ctenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Telefonní číslo musí mít 9 číslic.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateReader_WhenEmailHasInvalidFormat_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            var upravenyCtenar = new Ctenar("Jan", "Novotny", "123456789", "spatnyemail");
+            upravenyCtenar.Id = ctenar.Id;
+
+            Result result = _service.UpdateReader(upravenyCtenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("E-mail musí být ve správném formátu.", result.Message);
+        }
+
+        [TestMethod]
+        public void UpdateReader_WhenPhoneNumberHasInvalidFormat_ShouldFail()
+        {
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            _ctenarRepository.Add(ctenar);
+
+            var upravenyCtenar = new Ctenar("Jan", "Novotny", "12345", "jan@test.cz");
+            upravenyCtenar.Id = ctenar.Id;
+
+            Result result = _service.UpdateReader(upravenyCtenar);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Telefonní číslo musí mít 9 číslic.", result.Message);
         }
 
         [TestMethod]
