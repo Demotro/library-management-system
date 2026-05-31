@@ -25,8 +25,7 @@ namespace Knihovna
             dgvRezervovane.DataSource = null;
             dgvVypujcene.DataSource = null;
 
-            dgvCtenari.DataSource = Databaze.Ctenari;
-
+            ApplyReaderSearchFilter();
             ApplyBookSearchFilter();
 
             if (selectedCtenarId.HasValue)
@@ -62,6 +61,28 @@ namespace Knihovna
                 .ToList();
 
             dgvKnihy.DataSource = new BindingList<Kniha>(filteredBooks);
+        }
+
+        //aplikuje vyhledavani ctenaru podle jmena, prijmeni, e-mailu nebo telefonu
+        private void ApplyReaderSearchFilter()
+        {
+            string searchText = txtHledatCtenare.Text.Trim().ToLower();
+
+            if (string.IsNullOrWhiteSpace(searchText))
+            {
+                dgvCtenari.DataSource = Databaze.Ctenari;
+                return;
+            }
+
+            var filteredReaders = Databaze.Ctenari
+                .Where(c =>
+                    c.Jmeno.ToLower().Contains(searchText) ||
+                    c.Prijmeni.ToLower().Contains(searchText) ||
+                    c.Email.ToLower().Contains(searchText) ||
+                    c.TelefonniCislo.ToLower().Contains(searchText))
+                .ToList();
+
+            dgvCtenari.DataSource = new BindingList<Ctenar>(filteredReaders);
         }
 
         //vrati ID aktualne vybraneho ctenare
@@ -367,6 +388,29 @@ namespace Knihovna
         {
             txtHledatKnihu.Text = "";
             ApplyBookSearchFilter();
+        }
+
+        private void txtHledatCtenare_TextChanged(object sender, EventArgs e)
+        {
+            int? selectedKnihaId = GetSelectedKnihaId();
+
+            ApplyReaderSearchFilter();
+
+            RefreshSelectedReaderBooks();
+            SetButtons();
+
+            if (selectedKnihaId.HasValue)
+            {
+                SelectKnihaById(selectedKnihaId.Value);
+            }
+        }
+
+        private void btnVymazatHledaniCtenaru_Click(object sender, EventArgs e)
+        {
+            txtHledatCtenare.Text = "";
+            ApplyReaderSearchFilter();
+            RefreshSelectedReaderBooks();
+            SetButtons();
         }
     }
 }

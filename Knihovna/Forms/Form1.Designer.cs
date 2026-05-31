@@ -71,6 +71,9 @@
             lblHledatKnihu = new Label();
             txtHledatKnihu = new TextBox();
             btnVymazatHledaniKnih = new Button();
+            lblHledatCtenare = new Label();
+            txtHledatCtenare = new TextBox();
+            btnVymazatHledaniCtenaru = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvCtenari).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvKnihy).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvVypujcene).BeginInit();
@@ -453,7 +456,7 @@
             // 
             // txtHledatKnihu
             // 
-            txtHledatKnihu.Location = new Point(881, 15);
+            txtHledatKnihu.Location = new Point(881, 16);
             txtHledatKnihu.Name = "txtHledatKnihu";
             txtHledatKnihu.Size = new Size(100, 23);
             txtHledatKnihu.TabIndex = 19;
@@ -469,11 +472,41 @@
             btnVymazatHledaniKnih.UseVisualStyleBackColor = true;
             btnVymazatHledaniKnih.Click += btnVymazatHledaniKnih_Click;
             // 
+            // lblHledatCtenare
+            // 
+            lblHledatCtenare.AutoSize = true;
+            lblHledatCtenare.Location = new Point(256, 19);
+            lblHledatCtenare.Name = "lblHledatCtenare";
+            lblHledatCtenare.Size = new Size(87, 15);
+            lblHledatCtenare.TabIndex = 21;
+            lblHledatCtenare.Text = "Hledat čtenáře:";
+            // 
+            // txtHledatCtenare
+            // 
+            txtHledatCtenare.Location = new Point(349, 15);
+            txtHledatCtenare.Name = "txtHledatCtenare";
+            txtHledatCtenare.Size = new Size(100, 23);
+            txtHledatCtenare.TabIndex = 22;
+            txtHledatCtenare.TextChanged += txtHledatCtenare_TextChanged;
+            // 
+            // btnVymazatHledaniCtenaru
+            // 
+            btnVymazatHledaniCtenaru.Location = new Point(455, 15);
+            btnVymazatHledaniCtenaru.Name = "btnVymazatHledaniCtenaru";
+            btnVymazatHledaniCtenaru.Size = new Size(75, 23);
+            btnVymazatHledaniCtenaru.TabIndex = 23;
+            btnVymazatHledaniCtenaru.Text = "Vymazat";
+            btnVymazatHledaniCtenaru.UseVisualStyleBackColor = true;
+            btnVymazatHledaniCtenaru.Click += btnVymazatHledaniCtenaru_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1088, 607);
+            Controls.Add(btnVymazatHledaniCtenaru);
+            Controls.Add(txtHledatCtenare);
+            Controls.Add(lblHledatCtenare);
             Controls.Add(btnVymazatHledaniKnih);
             Controls.Add(txtHledatKnihu);
             Controls.Add(lblHledatKnihu);
@@ -550,5 +583,8 @@
         private Label lblHledatKnihu;
         private TextBox txtHledatKnihu;
         private Button btnVymazatHledaniKnih;
+        private Label lblHledatCtenare;
+        private TextBox txtHledatCtenare;
+        private Button btnVymazatHledaniCtenaru;
     }
 }
