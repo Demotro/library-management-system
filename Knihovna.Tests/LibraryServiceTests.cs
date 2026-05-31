@@ -155,6 +155,40 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void UpdateBook_WhenIsbnContainsHyphens_ShouldSaveNormalizedIsbn()
+        {
+            var kniha = new DobraKniha("Old Book", "Old Author", "1234567890", 2020);
+            _knihaRepository.Add(kniha);
+
+            var upravenaKniha = new DobraKniha("Updated Book", "Updated Author", "123-456-7890", 2021);
+            upravenaKniha.Id = kniha.Id;
+
+            Result result = _service.UpdateBook(upravenaKniha);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Kniha byla úspěšně upravena.", result.Message);
+            Assert.AreEqual("1234567890", upravenaKniha.ISBN);
+        }
+
+        [TestMethod]
+        public void UpdateBook_WhenSameIsbnHasDifferentFormat_ShouldFail()
+        {
+            var kniha1 = new DobraKniha("Book One", "Author One", "1234567890", 2020);
+            var kniha2 = new DobraKniha("Book Two", "Author Two", "0987654321", 2021);
+
+            _knihaRepository.Add(kniha1);
+            _knihaRepository.Add(kniha2);
+
+            var upravenaKniha = new DobraKniha("Book Two Updated", "Author Two", "123-456-7890", 2021);
+            upravenaKniha.Id = kniha2.Id;
+
+            Result result = _service.UpdateBook(upravenaKniha);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Jiná kniha s tímto ISBN už existuje.", result.Message);
+        }
+
+        [TestMethod]
         public void UpdateBook_WhenTitleAndAuthorContainSpaces_ShouldTrimValues()
         {
             var kniha = new DobraKniha("Old Book", "Old Author", "1234567890", 2020);
