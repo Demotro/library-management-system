@@ -14,6 +14,11 @@ namespace Knihovna
             dgvKnihy.AutoGenerateColumns = false;
             dgvCtenari.AutoGenerateColumns = false;
 
+            if (cbFiltrDostupnosti.Items.Count > 0 && cbFiltrDostupnosti.SelectedIndex == -1)
+            {
+                cbFiltrDostupnosti.SelectedIndex = 0;
+            }
+
             RefreshDataSources();
         }
 
@@ -42,25 +47,32 @@ namespace Knihovna
             SetButtons();
         }
 
-        //aplikuje vyhledavani knih podle nazvu, autora nebo ISBN
+        //aplikuje vyhledavani knih podle nazvu, autora nebo ISBN a filtr podle dostupnosti
         private void ApplyBookSearchFilter()
         {
             string searchText = txtHledatKnihu.Text.Trim().ToLower();
+            string selectedFilter = cbFiltrDostupnosti.SelectedItem?.ToString() ?? "Všechny";
 
-            if (string.IsNullOrWhiteSpace(searchText))
+            var filteredBooks = Databaze.Knihy.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchText))
             {
-                dgvKnihy.DataSource = Databaze.Knihy;
-                return;
-            }
-
-            var filteredBooks = Databaze.Knihy
-                .Where(k =>
+                filteredBooks = filteredBooks.Where(k =>
                     k.Nazev.ToLower().Contains(searchText) ||
                     k.Autor.ToLower().Contains(searchText) ||
-                    k.ISBN.ToLower().Contains(searchText))
-                .ToList();
+                    k.ISBN.ToLower().Contains(searchText));
+            }
 
-            dgvKnihy.DataSource = new BindingList<Kniha>(filteredBooks);
+            if (selectedFilter == "Dostupné")
+            {
+                filteredBooks = filteredBooks.Where(k => k.Dostupnost == true);
+            }
+            else if (selectedFilter == "Vypùjèené")
+            {
+                filteredBooks = filteredBooks.Where(k => k.Dostupnost == false);
+            }
+
+            dgvKnihy.DataSource = new BindingList<Kniha>(filteredBooks.ToList());
         }
 
         //aplikuje vyhledavani ctenaru podle jmena, prijmeni, e-mailu nebo telefonu
@@ -409,6 +421,27 @@ namespace Knihovna
         {
             txtHledatCtenare.Text = "";
             ApplyReaderSearchFilter();
+            RefreshSelectedReaderBooks();
+            SetButtons();
+        }
+
+        private void cbFiltrDostupnosti_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int? selectedCtenarId = GetSelectedCtenarId();
+            int? selectedKnihaId = GetSelectedKnihaId();
+
+            ApplyBookSearchFilter();
+
+            if (selectedCtenarId.HasValue)
+            {
+                SelectCtenarById(selectedCtenarId.Value);
+            }
+
+            if (selectedKnihaId.HasValue)
+            {
+                SelectKnihaById(selectedKnihaId.Value);
+            }
+
             RefreshSelectedReaderBooks();
             SetButtons();
         }

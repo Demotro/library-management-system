@@ -74,6 +74,8 @@
             lblHledatCtenare = new Label();
             txtHledatCtenare = new TextBox();
             btnVymazatHledaniCtenaru = new Button();
+            cbFiltrDostupnosti = new ComboBox();
+            lblFiltrDostupnosti = new Label();
             ((System.ComponentModel.ISupportInitialize)dgvCtenari).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvKnihy).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvVypujcene).BeginInit();
@@ -86,11 +88,11 @@
             dgvCtenari.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvCtenari.Columns.AddRange(new DataGridViewColumn[] { Jméno, Příjmení, Email, TelefonniCislo });
             dgvCtenari.EditMode = DataGridViewEditMode.EditProgrammatically;
-            dgvCtenari.Location = new Point(12, 41);
+            dgvCtenari.Location = new Point(12, 45);
             dgvCtenari.MultiSelect = false;
             dgvCtenari.Name = "dgvCtenari";
             dgvCtenari.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvCtenari.Size = new Size(518, 257);
+            dgvCtenari.Size = new Size(518, 253);
             dgvCtenari.TabIndex = 0;
             dgvCtenari.SelectionChanged += dgvCtenari_SelectionChanged;
             // 
@@ -141,11 +143,11 @@
             dgvKnihy.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvKnihy.Columns.AddRange(new DataGridViewColumn[] { Nazev, Autor, Dostupnost, ISBN, RokVydani, StavKnihy });
             dgvKnihy.EditMode = DataGridViewEditMode.EditProgrammatically;
-            dgvKnihy.Location = new Point(544, 41);
+            dgvKnihy.Location = new Point(544, 45);
             dgvKnihy.MultiSelect = false;
             dgvKnihy.Name = "dgvKnihy";
             dgvKnihy.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvKnihy.Size = new Size(518, 257);
+            dgvKnihy.Size = new Size(518, 253);
             dgvKnihy.TabIndex = 2;
             // 
             // Nazev
@@ -448,7 +450,7 @@
             // lblHledatKnihu
             // 
             lblHledatKnihu.AutoSize = true;
-            lblHledatKnihu.Location = new Point(797, 19);
+            lblHledatKnihu.Location = new Point(627, 19);
             lblHledatKnihu.Name = "lblHledatKnihu";
             lblHledatKnihu.Size = new Size(78, 15);
             lblHledatKnihu.TabIndex = 18;
@@ -456,7 +458,7 @@
             // 
             // txtHledatKnihu
             // 
-            txtHledatKnihu.Location = new Point(881, 16);
+            txtHledatKnihu.Location = new Point(711, 16);
             txtHledatKnihu.Name = "txtHledatKnihu";
             txtHledatKnihu.Size = new Size(100, 23);
             txtHledatKnihu.TabIndex = 19;
@@ -464,7 +466,7 @@
             // 
             // btnVymazatHledaniKnih
             // 
-            btnVymazatHledaniKnih.Location = new Point(987, 15);
+            btnVymazatHledaniKnih.Location = new Point(817, 16);
             btnVymazatHledaniKnih.Name = "btnVymazatHledaniKnih";
             btnVymazatHledaniKnih.Size = new Size(75, 23);
             btnVymazatHledaniKnih.TabIndex = 20;
@@ -483,7 +485,7 @@
             // 
             // txtHledatCtenare
             // 
-            txtHledatCtenare.Location = new Point(349, 15);
+            txtHledatCtenare.Location = new Point(349, 16);
             txtHledatCtenare.Name = "txtHledatCtenare";
             txtHledatCtenare.Size = new Size(100, 23);
             txtHledatCtenare.TabIndex = 22;
@@ -499,11 +501,33 @@
             btnVymazatHledaniCtenaru.UseVisualStyleBackColor = true;
             btnVymazatHledaniCtenaru.Click += btnVymazatHledaniCtenaru_Click;
             // 
+            // cbFiltrDostupnosti
+            // 
+            cbFiltrDostupnosti.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbFiltrDostupnosti.FormattingEnabled = true;
+            cbFiltrDostupnosti.Items.AddRange(new object[] { "Všechny", "Dostupné", "Vypůjčené" });
+            cbFiltrDostupnosti.Location = new Point(975, 16);
+            cbFiltrDostupnosti.Name = "cbFiltrDostupnosti";
+            cbFiltrDostupnosti.Size = new Size(87, 23);
+            cbFiltrDostupnosti.TabIndex = 24;
+            cbFiltrDostupnosti.SelectedIndexChanged += cbFiltrDostupnosti_SelectedIndexChanged;
+            // 
+            // lblFiltrDostupnosti
+            // 
+            lblFiltrDostupnosti.AutoSize = true;
+            lblFiltrDostupnosti.Location = new Point(898, 19);
+            lblFiltrDostupnosti.Name = "lblFiltrDostupnosti";
+            lblFiltrDostupnosti.Size = new Size(71, 15);
+            lblFiltrDostupnosti.TabIndex = 25;
+            lblFiltrDostupnosti.Text = "Dostupnost:";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1088, 607);
+            Controls.Add(lblFiltrDostupnosti);
+            Controls.Add(cbFiltrDostupnosti);
             Controls.Add(btnVymazatHledaniCtenaru);
             Controls.Add(txtHledatCtenare);
             Controls.Add(lblHledatCtenare);
@@ -586,5 +610,7 @@
         private Label lblHledatCtenare;
         private TextBox txtHledatCtenare;
         private Button btnVymazatHledaniCtenaru;
+        private ComboBox cbFiltrDostupnosti;
+        private Label lblFiltrDostupnosti;
     }
 }
