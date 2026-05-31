@@ -164,6 +164,8 @@ namespace Knihovna
                 return Result.Fail("E-mail musí být ve správném formátu.");
             }
 
+            ctenar.Email = NormalizeEmail(ctenar.Email);
+
             if (string.IsNullOrWhiteSpace(ctenar.TelefonniCislo))
             {
                 return Result.Fail("Telefonní číslo je povinné.");
@@ -212,6 +214,8 @@ namespace Knihovna
             {
                 return Result.Fail("E-mail musí být ve správném formátu.");
             }
+
+            ctenar.Email = NormalizeEmail(ctenar.Email);
 
             if (string.IsNullOrWhiteSpace(ctenar.TelefonniCislo))
             {
@@ -415,6 +419,11 @@ namespace Knihovna
         private bool IsValidEmail(string email)
         {
             return email.Contains("@") && email.Contains(".");
+        }
+
+        private string NormalizeEmail(string email)
+        {
+            return email.Trim().ToLower();
         }
 
         private bool IsValidPhoneNumber(string phoneNumber)
