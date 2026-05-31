@@ -291,6 +291,99 @@ namespace Knihovna.Tests
         }
 
         [TestMethod]
+        public void DeleteReader_WhenReaderHasActiveLoan_ShouldFail()
+        {
+            var knihaRepository = new FakeKnihaRepository();
+            var ctenarRepository = new FakeCtenarRepository();
+            var vypujckaRepository = new FakeVypujckaRepository();
+            var rezervaceRepository = new FakeRezervaceRepository();
+
+            var service = CreateService(
+                knihaRepository,
+                ctenarRepository,
+                vypujckaRepository,
+                rezervaceRepository
+            );
+
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+
+            knihaRepository.Add(kniha);
+            ctenarRepository.Add(ctenar);
+
+            service.BorrowBook(kniha.Id, ctenar.Id);
+
+            Result result = service.DeleteReader(ctenar.Id);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Čtenáře nelze smazat, protože má aktivní výpůjčku.", result.Message);
+        }
+
+        [TestMethod]
+        public void DeleteReader_WhenReaderHasActiveReservation_ShouldFail()
+        {
+            var knihaRepository = new FakeKnihaRepository();
+            var ctenarRepository = new FakeCtenarRepository();
+            var vypujckaRepository = new FakeVypujckaRepository();
+            var rezervaceRepository = new FakeRezervaceRepository();
+
+            var service = CreateService(
+                knihaRepository,
+                ctenarRepository,
+                vypujckaRepository,
+                rezervaceRepository
+            );
+
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+            var ctenar1 = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+            var ctenar2 = new Ctenar("Petr", "Svoboda", "987654321", "petr@test.cz");
+
+            knihaRepository.Add(kniha);
+            ctenarRepository.Add(ctenar1);
+            ctenarRepository.Add(ctenar2);
+
+            service.BorrowBook(kniha.Id, ctenar1.Id);
+            service.ReserveBook(kniha.Id, ctenar2.Id);
+
+            Result result = service.DeleteReader(ctenar2.Id);
+
+            Assert.IsFalse(result.Success);
+            Assert.AreEqual("Čtenáře nelze smazat, protože má aktivní rezervaci.", result.Message);
+        }
+
+        [TestMethod]
+        public void DeleteReader_WhenReaderHasOnlyReturnedLoans_ShouldSucceed()
+        {
+            var knihaRepository = new FakeKnihaRepository();
+            var ctenarRepository = new FakeCtenarRepository();
+            var vypujckaRepository = new FakeVypujckaRepository();
+            var rezervaceRepository = new FakeRezervaceRepository();
+
+            var service = CreateService(
+                knihaRepository,
+                ctenarRepository,
+                vypujckaRepository,
+                rezervaceRepository
+            );
+
+            var kniha = new DobraKniha("Test Book", "Test Author", "1234567890", 2020);
+            var ctenar = new Ctenar("Jan", "Novak", "123456789", "jan@test.cz");
+
+            knihaRepository.Add(kniha);
+            ctenarRepository.Add(ctenar);
+
+            service.BorrowBook(kniha.Id, ctenar.Id);
+            service.ReturnBook(kniha.Id);
+
+            Result result = service.DeleteReader(ctenar.Id);
+
+            Assert.IsTrue(result.Success);
+            Assert.AreEqual("Čtenář byl úspěšně smazán.", result.Message);
+            Assert.IsNull(ctenarRepository.GetById(ctenar.Id));
+            Assert.IsFalse(vypujckaRepository.GetLoansByReaderId(ctenar.Id).Any());
+        }
+
+        [TestMethod]
         public void UpdateBook_WhenIsbnBelongsToAnotherBook_ShouldFail()
         {
             var knihaRepository = new FakeKnihaRepository();
