@@ -43,6 +43,9 @@ namespace Knihovna
                 return Result.Fail("Autor knihy je povinný.");
             }
 
+            kniha.Nazev = kniha.Nazev.Trim();
+            kniha.Autor = kniha.Autor.Trim();
+
             if (string.IsNullOrWhiteSpace(kniha.ISBN))
             {
                 return Result.Fail("ISBN je povinné.");
@@ -83,6 +86,9 @@ namespace Knihovna
             {
                 return Result.Fail("Autor knihy je povinný.");
             }
+
+            kniha.Nazev = kniha.Nazev.Trim();
+            kniha.Autor = kniha.Autor.Trim();
 
             if (string.IsNullOrWhiteSpace(kniha.ISBN))
             {
@@ -154,6 +160,9 @@ namespace Knihovna
                 return Result.Fail("Příjmení čtenáře je povinné.");
             }
 
+            ctenar.Jmeno = ctenar.Jmeno.Trim();
+            ctenar.Prijmeni = ctenar.Prijmeni.Trim();
+
             if (string.IsNullOrWhiteSpace(ctenar.Email))
             {
                 return Result.Fail("E-mail čtenáře je povinný.");
@@ -206,6 +215,9 @@ namespace Knihovna
             {
                 return Result.Fail("Příjmení čtenáře je povinné.");
             }
+
+            ctenar.Jmeno = ctenar.Jmeno.Trim();
+            ctenar.Prijmeni = ctenar.Prijmeni.Trim();
 
             if (string.IsNullOrWhiteSpace(ctenar.Email))
             {
