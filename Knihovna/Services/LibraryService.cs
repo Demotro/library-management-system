@@ -11,11 +11,24 @@ namespace Knihovna
         private readonly IRezervaceRepository _rezervaceRepository;
 
         public LibraryService()
+            : this(
+                  new KnihaRepository(),
+                  new CtenarRepository(),
+                  new VypujckaRepository(),
+                  new RezervaceRepository())
         {
-            _knihaRepository = new KnihaRepository();
-            _ctenarRepository = new CtenarRepository();
-            _vypujckaRepository = new VypujckaRepository();
-            _rezervaceRepository = new RezervaceRepository();
+        }
+
+        public LibraryService(
+            IKnihaRepository knihaRepository,
+            ICtenarRepository ctenarRepository,
+            IVypujckaRepository vypujckaRepository,
+            IRezervaceRepository rezervaceRepository)
+        {
+            _knihaRepository = knihaRepository;
+            _ctenarRepository = ctenarRepository;
+            _vypujckaRepository = vypujckaRepository;
+            _rezervaceRepository = rezervaceRepository;
         }
 
         public Result AddBook(Kniha kniha)
