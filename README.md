@@ -2,7 +2,16 @@
 
 Desktop application for managing books, readers, loans and reservations, built with C#, Windows Forms and SQLite.
 
-The project includes database storage, separated application logic, repository classes, validation and unit tests.
+The project includes local database storage, separated application logic, repository classes, input validation, reservation rules and unit-tested business logic.
+
+## Highlights
+
+- Layered structure with separated UI, business logic and database access
+- SQLite database instead of file-based storage
+- Repository pattern for database operations
+- Service layer for main business rules
+- Unit tests for important application logic
+- Reservation queue with loan and reservation limits
 
 ## Features
 
@@ -10,17 +19,14 @@ The project includes database storage, separated application logic, repository c
 - Add, edit and delete readers
 - Borrow and return books
 - Reserve borrowed books
-- Reservation queue for borrowed books
 - Search and filter books
 - Search readers
 - Input validation for books and readers
-- Limit of active loans per reader
-- Limit of active reservations per reader
+- Limit of 5 active loans per reader
+- Limit of 5 active reservations per reader
 - Prevent deleting books with active loans or reservations
 - Prevent deleting readers with active loans or reservations
-- Local SQLite database storage
-- Automatic database creation
-- Unit-tested business logic
+- Automatic local SQLite database creation
 
 ## Technologies
 
@@ -46,20 +52,14 @@ The project includes database storage, separated application logic, repository c
 
 The application uses a local SQLite database.
 
-The database stores:
-
-- books
-- readers
-- loans
-- reservations
-
-The database is created automatically when the application runs.
+The database stores books, readers, loans and reservations.  
+It is created automatically when the application runs.
 
 ## Application Logic
 
-The project separates the user interface, business logic and database access into different parts.
+The project separates the user interface, business logic and database access.
 
-Main rules such as borrowing, returning, reservations, validation and delete restrictions are handled in the service layer.
+Main rules such as borrowing, returning, reservations, validation, limits and delete restrictions are handled in the service layer.
 
 Database operations are handled through repository classes.
 
@@ -67,17 +67,7 @@ Database operations are handled through repository classes.
 
 The project uses MSTest for unit testing the main business logic.
 
-Tests cover:
-
-- book validation
-- reader validation
-- borrowing books
-- returning books
-- reservations
-- reservation queue logic
-- active loan limits
-- active reservation limits
-- delete restrictions
+Tests cover validation, borrowing, returning, reservations, reservation queue logic, active loan limits, active reservation limits and delete restrictions.
 
 ## How to Run
 
