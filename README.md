@@ -45,7 +45,7 @@ The project includes local database storage, layered application structure, repo
 - `Models/` - application models
 - `Data/` - database connection and setup
 - `Repositories/` - database access and CRUD operations
-- `Services/` - main application logic
+- `Services/` - business logic
 - `Knihovna.Tests/` - unit tests and fake repositories
 
 ## Database
