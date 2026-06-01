@@ -1,32 +1,9 @@
-# Build results
 bin/
 obj/
-
-# Visual Studio
 .vs/
 *.user
-*.suo
-*.rsuser
-
-# Rider / JetBrains
-.idea/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
-# Old XML data files
-knihy.xml
-ctenari.xml
-
-# SQLite local database
 *.db
 *.db-shm
 *.db-wal
-
-# Test results
+!Knihovna/knihovna.db
 TestResults/
-**/TestResults/
