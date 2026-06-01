@@ -493,22 +493,43 @@ namespace Knihovna
         private void txtHledatKnihu_TextChanged(object sender, EventArgs e)
         {
             int? selectedCtenarId = GetSelectedCtenarId();
+            int? selectedKnihaId = GetSelectedKnihaId();
 
             ApplyBookSearchFilter();
-
-            RefreshSelectedReaderBooks();
-            SetButtons();
 
             if (selectedCtenarId.HasValue)
             {
                 SelectCtenarById(selectedCtenarId.Value);
             }
+
+            if (selectedKnihaId.HasValue)
+            {
+                SelectKnihaById(selectedKnihaId.Value);
+            }
+
+            RefreshSelectedReaderBooks();
+            SetButtons();
         }
 
         private void btnVymazatHledaniKnih_Click(object sender, EventArgs e)
         {
+            int? selectedCtenarId = GetSelectedCtenarId();
+            int? selectedKnihaId = GetSelectedKnihaId();
+
             txtHledatKnihu.Text = "";
             ApplyBookSearchFilter();
+
+            if (selectedCtenarId.HasValue)
+            {
+                SelectCtenarById(selectedCtenarId.Value);
+            }
+
+            if (selectedKnihaId.HasValue)
+            {
+                SelectKnihaById(selectedKnihaId.Value);
+            }
+
+            RefreshSelectedReaderBooks();
             SetButtons();
         }
 
