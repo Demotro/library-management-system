@@ -2,7 +2,7 @@
 
 Desktop application for managing books, readers, loans and reservations, built with C#, Windows Forms and SQLite.
 
-The project demonstrates a complete desktop application with database storage, layered architecture, repository pattern, service layer, validation and unit-tested business logic.
+The project includes database storage, separated application logic, repository classes, validation and unit tests.
 
 ## Features
 
@@ -29,41 +29,45 @@ The project demonstrates a complete desktop application with database storage, l
 - Windows Forms
 - SQLite
 - Microsoft.Data.Sqlite
+- Repository pattern
+- Service layer
 - MSTest
 
-## Architecture
-
-The project is split into multiple parts:
+## Project Structure
 
 - `Forms/` - Windows Forms user interface
 - `Models/` - application models
 - `Data/` - database connection and setup
-- `Repositories/` - data access and CRUD operations
-- `Services/` - main business logic
+- `Repositories/` - database access and CRUD operations
+- `Services/` - main application logic
 - `Knihovna.Tests/` - unit tests and fake repositories
-
-The UI does not work directly with the database.  
-Main application rules are handled in the service layer, while repositories are responsible for database operations.
 
 ## Database
 
 The application uses a local SQLite database.
 
-Main tables:
+The database stores:
 
-- `Knihy`
-- `Ctenari`
-- `Vypujcky`
-- `Rezervace`
+- books
+- readers
+- loans
+- reservations
 
-The database stores books, readers, active loans and reservations.  
-It is created automatically when the application runs.
+The database is created automatically when the application runs.
+
+## Application Logic
+
+The project separates the user interface, business logic and database access into different parts.
+
+Main rules such as borrowing, returning, reservations, validation and delete restrictions are handled in the service layer.
+
+Database operations are handled through repository classes.
 
 ## Testing
 
 The project uses MSTest for unit testing the main business logic.
 
-The tests cover mainly:
+Tests cover:
 
 - book validation
 - reader validation
