@@ -2,20 +2,19 @@
 
 Desktop application for managing a small library, built with C#, Windows Forms and SQLite.
 
-The project focuses on basic library operations, clean separation of logic and data access, and unit-tested business rules.
+The application allows users to manage books, readers, loans, returns and reservations.
 
 ## Features
 
-- Manage books and readers
+- Add, edit and delete books
+- Add, edit and delete readers
 - Borrow and return books
-- Reserve already borrowed books
-- FIFO reservation queue
-- Search and filter books and readers
-- Input validation for ISBN, e-mail, phone number and required fields
-- Limit of 5 active loans per reader
-- Limit of 5 active reservations per reader
-- Prevent deleting records with active loans or reservations
+- Reserve borrowed books
+- Reservation queue
+- Search and filter records
+- Input validation
 - Local SQLite database storage
+- Unit-tested business logic
 
 ## Technologies
 
@@ -24,52 +23,28 @@ The project focuses on basic library operations, clean separation of logic and d
 - Windows Forms
 - SQLite
 - Microsoft.Data.Sqlite
+- Repository pattern
+- Service layer
 - MSTest
 
-## Architecture
+## Project Structure
 
-The application is split into several parts:
-
-- `Forms/` - Windows Forms user interface
-- `Models/` - book, reader, loan and reservation models
-- `Data/` - SQLite database connection and setup
-- `Repositories/` - database access and CRUD operations
-- `Services/` - main business logic
-- `Knihovna.Tests/` - unit tests and fake repositories
-
-The UI communicates with the service layer, while database operations are handled through repositories.  
-This keeps the main business rules separated from the Windows Forms code.
+- `Forms/` - user interface
+- `Models/` - application models
+- `Data/` - database setup
+- `Repositories/` - database access
+- `Services/` - business logic
+- `Knihovna.Tests/` - unit tests
 
 ## Database
 
-The application uses a local SQLite database that is created automatically when the application runs.
+The application uses a local SQLite database.
 
-Main database tables:
-
-- `Knihy`
-- `Ctenari`
-- `Vypujcky`
-- `Rezervace`
-
-## Business Logic
-
-Books can be borrowed only when they are available.
-
-If a book is already borrowed, readers can create reservations for it.  
-Reservations are processed in order, so the first reader in the queue has priority when the book becomes available again.
-
-The application also prevents invalid operations, such as deleting books or readers that are still connected to active loans or reservations.
+The database stores books, readers, loans and reservations.
 
 ## Testing
 
-The project includes unit tests for the main service logic, including:
-
-- book and reader validation
-- borrowing and returning books
-- reservation rules
-- reservation queue behavior
-- loan and reservation limits
-- delete restrictions
+The project uses MSTest for unit testing the main business logic.
 
 ## How to Run
 
