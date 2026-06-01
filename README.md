@@ -10,7 +10,7 @@ The project includes local database storage, layered application structure, repo
 - SQLite database instead of file-based storage
 - Repository pattern for database operations
 - Service layer for main business rules
-- Unit tests for core application logic
+- Unit tests for core business logic
 - Reservation queue with loan and reservation limits
 
 ## Features
