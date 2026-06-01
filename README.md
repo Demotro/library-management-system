@@ -2,7 +2,7 @@
 
 Desktop application for managing books, readers, loans and reservations, built with C#, Windows Forms and SQLite.
 
-The project includes local database storage, separated application logic, repository classes, input validation, reservation rules and unit-tested business logic.
+The project includes local database storage, layered application structure, repository classes, input validation, reservation rules and unit-tested business logic.
 
 ## Highlights
 
@@ -10,7 +10,7 @@ The project includes local database storage, separated application logic, reposi
 - SQLite database instead of file-based storage
 - Repository pattern for database operations
 - Service layer for main business rules
-- Unit tests for important application logic
+- Unit tests for core application logic
 - Reservation queue with loan and reservation limits
 
 ## Features
